@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "node --test src/**/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "cli": "node src/cli.ts"
   },
   "devDependencies": {
     "@types/node": "^26.4.1",

@@ -51,24 +51,24 @@ Plano revisado a ser executado: tipos consolidados (1), regra de correção cons
 
 ## 1. Tipos de domínio
 
-- [ ] 1.1 Criar `RespostaAluno`, `ResultadoQuestao` e `ResultadoProva` em `src/` e verificar que `npx tsc --noEmit` compila sem erros
+- [x] 1.1 Criar `RespostaAluno`, `ResultadoQuestao` e `ResultadoProva` em `src/` e verificar que `npx tsc --noEmit` compila sem erros
 
 ## 2. Regras de correção
 
-- [ ] 2.1 Implementar `respostaEstaCorreta(questao, resposta)` cobrindo múltipla escolha, dicotômica e resposta única
-- [ ] 2.2 Tratar questão discursiva como pendente (nunca conta como erro/acerto)
-- [ ] 2.3 Tratar questão objetiva sem resposta do aluno como errada
-- [ ] 2.4 Ignorar resposta do aluno para questão que não existe na prova
+- [x] 2.1 Implementar `respostaEstaCorreta(questao, resposta)` cobrindo múltipla escolha, dicotômica e resposta única
+- [x] 2.2 Tratar questão discursiva como pendente (nunca conta como erro/acerto)
+- [x] 2.3 Tratar questão objetiva sem resposta do aluno como errada
+- [x] 2.4 Ignorar resposta do aluno para questão que não existe na prova
 
 ## 3. Função de correção da prova
 
-- [ ] 3.1 Implementar `corrigirProva(prova, respostas)` combinando as regras acima
-- [ ] 3.2 Tratar prova sem questões objetivas retornando nota 0/0 sem erro
+- [x] 3.1 Implementar `corrigirProva(prova, respostas)` combinando as regras acima
+- [x] 3.2 Tratar prova sem questões objetivas retornando nota 0/0 sem erro
 
 ## 4. Testes
 
-- [ ] 4.1 Testes dos 5 cenários de aceite da spec
+- [x] 4.1 Testes dos 5 cenários de aceite da spec
 
 ## 5. Verificação final
 
-- [ ] 5.1 Rodar `npm test` e confirmar que todos os cenários estão cobertos e passando
+- [x] 5.1 Rodar `npm test` e confirmar que todos os cenários estão cobertos e passando

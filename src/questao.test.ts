@@ -42,6 +42,11 @@ test("questão dicotômica válida", () => {
   assert.deepEqual(validarQuestao(questao), []);
 });
 
+test("questão dicotômica válida com gabarito falso (caso de borda: false é falsy)", () => {
+  const questao: Questao = { tipo: "dicotomica", enunciado: "Afirmação", gabarito: false };
+  assert.deepEqual(validarQuestao(questao), []);
+});
+
 test("questão dicotômica sem gabarito é rejeitada", () => {
   const questao = { tipo: "dicotomica", enunciado: "Afirmação" } as unknown as Questao;
   assert.notEqual(validarQuestao(questao).length, 0);

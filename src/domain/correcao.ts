@@ -1,5 +1,5 @@
-import type { Questao } from "./questao.ts";
 import type { Prova } from "./prova.ts";
+import type { Questao } from "./questao.ts";
 import type { RespostaAluno, ResultadoProva, ResultadoQuestao } from "./resposta.ts";
 
 function respostaEstaCorreta(questao: Questao, valor: string | boolean): boolean {

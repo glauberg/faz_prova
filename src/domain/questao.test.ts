@@ -1,6 +1,6 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
-import { validarQuestao, type Questao } from "./questao.ts";
+import { test } from "node:test";
+import { type Questao, validarQuestao } from "./questao.ts";
 
 test("questão discursiva com enunciado é válida", () => {
   const questao: Questao = { tipo: "discursiva", enunciado: "Explique X." };

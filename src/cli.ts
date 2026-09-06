@@ -1,5 +1,5 @@
-import { montarProva } from "./domain/prova.ts";
 import { corrigirProva } from "./domain/correcao.ts";
+import { montarProva } from "./domain/prova.ts";
 import type { Questao } from "./domain/questao.ts";
 import type { RespostaAluno } from "./domain/resposta.ts";
 

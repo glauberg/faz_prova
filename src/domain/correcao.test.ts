@@ -1,5 +1,5 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
+import { test } from "node:test";
 import { corrigirProva } from "./correcao.ts";
 import type { Prova } from "./prova.ts";
 import type { Questao } from "./questao.ts";
@@ -23,9 +23,7 @@ test("Cenário 1: todas as respostas corretas dão nota cheia", () => {
 });
 
 test("Cenário 2: questão objetiva não respondida conta como errada", () => {
-  const questoes: Questao[] = [
-    { tipo: "resposta-unica", enunciado: "Q1", gabarito: "42" },
-  ];
+  const questoes: Questao[] = [{ tipo: "resposta-unica", enunciado: "Q1", gabarito: "42" }];
   const prova: Prova = { titulo: "Prova", questoes };
 
   const resultado = corrigirProva(prova, []);
@@ -50,9 +48,7 @@ test("Cenário 3 (caso de borda): prova só com discursivas retorna 0/0 sem erro
 });
 
 test("Cenário 4: resposta para questão inexistente é ignorada", () => {
-  const questoes: Questao[] = [
-    { tipo: "resposta-unica", enunciado: "Q1", gabarito: "42" },
-  ];
+  const questoes: Questao[] = [{ tipo: "resposta-unica", enunciado: "Q1", gabarito: "42" }];
   const prova: Prova = { titulo: "Prova", questoes };
   const respostas: RespostaAluno[] = [
     { questaoIndice: 0, valor: "42" },

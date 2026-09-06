@@ -22,7 +22,10 @@
 - [npm install] -> [Instala as dependências do projeto.]
 - [npm run dev] -> [Inicia a aplicação em modo de desenvolvimento.]
 - [npm run build] -> [Gera a versão de produção da aplicação.]
-- [npm test] -> [Verifica problemas de qualidade e padronização do código.]
+- [npm test] -> [Roda os testes automatizados (`node --test`) sobre `src/**/*.test.ts`.]
+- [npm run typecheck] -> [Verifica erros de tipo com `tsc --noEmit`, sem gerar arquivos.]
+- [npm run lint] -> [Verifica problemas de qualidade e padronização do código com Biome (lint + formatação).]
+- [npm run lint:fix] -> [Aplica as correções automáticas do Biome.]
 - [npx prisma migrate dev] -> [Aplica migrações do schema Prisma no banco de dados local/Supabase.]
 - [npx prisma generate] -> [Gera o Prisma Client a partir do schema.]
 ## Convenções de código

@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["gestor_provas"]
+}
+
+enum TipoQuestao {
+  discursiva
+  multipla_escolha
+  dicotomica
+  resposta_unica
+
+  @@schema("gestor_provas")
+}
+
+enum StatusQuestaoResultado {
+  acertou
+  errou
+  pendente
+
+  @@schema("gestor_provas")
+}
+
+model Prova {
+  id        String   @id @default(cuid())
+  titulo    String
+  createdAt DateTime @default(now())
+
+  questoes   Questao[]
+  resultados ResultadoProva[]
+
+  @@schema("gestor_provas")
+}
+
+model Questao {
+  id      String      @id @default(cuid())
+  prova   Prova       @relation(fields: [provaId], references: [id])
+  provaId String
+  ordem   Int
+  tipo    TipoQuestao
+
+  enunciado String
+
+  // apenas multipla_escolha
+  alternativas String[]
+
+  // multipla_escolha e resposta_unica
+  gabaritoTexto String?
+
+  // dicotomica
+  gabaritoBooleano Boolean?
+
+  resultados ResultadoQuestao[]
+
+  @@unique([provaId, ordem])
+  @@schema("gestor_provas")
+}
+
+model ResultadoProva {
+  id      String @id @default(cuid())
+  prova   Prova  @relation(fields: [provaId], references: [id])
+  provaId String
+  alunoId String
+
+  acertosObjetivas Int
+  totalObjetivas   Int
+  createdAt        DateTime @default(now())
+
+  detalhamento ResultadoQuestao[]
+
+  @@schema("gestor_provas")
+}
+
+model ResultadoQuestao {
+  id               String                 @id @default(cuid())
+  resultadoProva   ResultadoProva         @relation(fields: [resultadoProvaId], references: [id])
+  resultadoProvaId String
+  questao          Questao                @relation(fields: [questaoId], references: [id])
+  questaoId        String
+  status           StatusQuestaoResultado
+
+  @@schema("gestor_provas")
+}

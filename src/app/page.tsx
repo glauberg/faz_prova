@@ -1,8 +1,13 @@
+import Link from "next/link";
+
 export default function HomePage() {
   return (
     <main>
       <h1>Gestor de Provas</h1>
-      <p>Frontend em construção — a lógica de domínio já está implementada em `src/domain`.</p>
+      <p>Criação, correção e organização de avaliações.</p>
+      <p>
+        <Link href="/provas/nova">Criar uma nova prova</Link>
+      </p>
     </main>
   );
 }

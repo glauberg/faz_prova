@@ -1,0 +1,48 @@
+import type { Questao } from "../../domain/questao.ts";
+
+export interface QuestaoRascunho {
+  tipo: Questao["tipo"];
+  enunciado: string;
+  alternativasTexto: string;
+  gabaritoTexto: string;
+  gabaritoBooleano: boolean;
+}
+
+export function novaQuestaoRascunho(): QuestaoRascunho {
+  return {
+    tipo: "discursiva",
+    enunciado: "",
+    alternativasTexto: "",
+    gabaritoTexto: "",
+    gabaritoBooleano: true,
+  };
+}
+
+export function paraQuestaoDominio(rascunho: QuestaoRascunho): Questao {
+  switch (rascunho.tipo) {
+    case "discursiva":
+      return { tipo: "discursiva", enunciado: rascunho.enunciado };
+    case "multipla-escolha":
+      return {
+        tipo: "multipla-escolha",
+        enunciado: rascunho.enunciado,
+        alternativas: rascunho.alternativasTexto
+          .split("\n")
+          .map((linha) => linha.trim())
+          .filter((linha) => linha.length > 0),
+        gabarito: rascunho.gabaritoTexto,
+      };
+    case "dicotomica":
+      return {
+        tipo: "dicotomica",
+        enunciado: rascunho.enunciado,
+        gabarito: rascunho.gabaritoBooleano,
+      };
+    case "resposta-unica":
+      return {
+        tipo: "resposta-unica",
+        enunciado: rascunho.enunciado,
+        gabarito: rascunho.gabaritoTexto,
+      };
+  }
+}

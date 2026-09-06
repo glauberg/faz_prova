@@ -2,8 +2,7 @@
 ## Sobre o projeto
 [O Gestor de Provas é um monorepo web para auxiliar professores na criação, correção e organização de avaliações. A aplicação permite a criação de questionários de questões discursivas, múltipla escolha, dicotômicas e resposta única.]
 ## Próxima etapa (planejada)
-[As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A próxima etapa de implementação passa a incluir os itens abaixo, antes tratados como fora de escopo:]
-- [Persistência (banco de dados) da prova e do resultado da correção, usando Supabase (Postgres) como banco de dados e Prisma como ORM/camada de acesso.]
+[As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Itens abaixo continuam fora de escopo:]
 - [Autenticação.]
 - [Exportação de provas para PDF.]
 - [Correção automática de questões discursivas usando IA.]
@@ -16,8 +15,16 @@
 - [`src/persistence/`] -> [Camada de persistência: instância do Prisma Client e repositórios (ex.: `provaRepository`, `resultadoRepository`). Único ponto de acesso ao banco (Supabase/Postgres).]
 - [`src/app/api/`] -> [Backend HTTP: API routes do Next.js que expõem `domain` + `persistence`. Não contém regra de negócio, só orquestra.]
 - [`src/app/**/page.tsx`] -> [Frontend: páginas e componentes React. Consomem apenas as API routes, nunca importam `src/persistence` diretamente.]
-- [`prisma/schema.prisma`] -> [Schema do banco de dados, na raiz do projeto (padrão do Prisma).]
+- [`prisma/schema.prisma`] -> [Modelos do banco de dados, isolados no schema Postgres `gestor_provas` (não em `public`, que já é usado pelo próprio Supabase). Não contém mais a URL de conexão (movida para `prisma.config.ts` no Prisma 7).]
+- [`prisma.config.ts`] -> [Configuração do Prisma CLI (schema, migrations). Usa `DIRECT_URL` para comandos como `migrate`; `PrismaClient` em runtime usa `DATABASE_URL` (pooled) via `@prisma/adapter-pg`, configurado em `src/persistence/prisma.ts`.]
+- [`src/generated/prisma/`] -> [Prisma Client gerado (`npm run db:generate`). Não é versionado (`.gitignore`) nem editado manualmente.]
 - [`src/cli.ts`] -> [Script de demonstração via terminal, independente do app Next.js.]
+## API (backend)
+[Rotas em `src/app/api/`, cada uma só orquestrando `domain` + `persistence` (sem regra de negócio própria):]
+- [`POST /api/provas`] -> [Valida (`montarProva`) e persiste uma prova. 400 se inválida.]
+- [`GET /api/provas/:id`] -> [Recupera uma prova salva. 404 se não existir.]
+- [`POST /api/provas/:id/correcoes`] -> [Corrige (`corrigirProva`) e persiste o resultado para um aluno. 404 se a prova não existir.]
+- [`GET /api/resultados/:id`] -> [Recupera um resultado de correção salvo. 404 se não existir.]
 ## Comandos
 - [npm install] -> [Instala as dependências do projeto.]
 - [npm run dev] -> [Inicia a aplicação em modo de desenvolvimento.]
@@ -26,8 +33,9 @@
 - [npm run typecheck] -> [Verifica erros de tipo com `tsc --noEmit`, sem gerar arquivos.]
 - [npm run lint] -> [Verifica problemas de qualidade e padronização do código com Biome (lint + formatação).]
 - [npm run lint:fix] -> [Aplica as correções automáticas do Biome.]
-- [npx prisma migrate dev] -> [Aplica migrações do schema Prisma no banco de dados local/Supabase.]
-- [npx prisma generate] -> [Gera o Prisma Client a partir do schema.]
+- [npm run db:migrate] -> [Cria/aplica migrações do schema Prisma no Supabase (usa `--env-file=.env.local`; a conexão para o CLI vem de `DIRECT_URL`, configurada em `prisma.config.ts`).]
+- [npm run db:generate] -> [Gera o Prisma Client (`src/generated/prisma`) a partir do schema. Não precisa de conexão com o banco — roda também no CI. Executado automaticamente no `postinstall`.]
+- [npm run db:studio] -> [Abre o Prisma Studio para inspecionar o banco (usa `--env-file=.env.local`).]
 ## Convenções de código
 - [Utilizar TypeScript como linguagem principal.]
 - [Utilizar nomes de variáveis, funções e componentes que expressem claramente sua finalidade.]
@@ -52,3 +60,13 @@
 - [Não implementar funcionalidades futuras apenas porque elas estão previstas no roadmap.]
 - [Não modificar configurações de infraestrutura sem necessidade explícita.]
 - [Não criar mocks para dados.]
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -1,7 +1,7 @@
-import { montarProva } from "./prova.ts";
-import { corrigirProva } from "./correcao.ts";
-import type { Questao } from "./questao.ts";
-import type { RespostaAluno } from "./resposta.ts";
+import { montarProva } from "./domain/prova.ts";
+import { corrigirProva } from "./domain/correcao.ts";
+import type { Questao } from "./domain/questao.ts";
+import type { RespostaAluno } from "./domain/resposta.ts";
 
 const questoes: Questao[] = [
   {

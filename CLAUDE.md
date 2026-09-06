@@ -41,6 +41,7 @@
 - [Acesso ao banco de dados (Supabase/Postgres) deve passar exclusivamente pelo Prisma Client, isolado em uma camada de persistência própria, sem regras de negócio misturadas.]
 - [Credenciais e URL de conexão do Supabase ficam em variáveis de ambiente (`.env.local`, fora do controle de versão), nunca hardcoded.]
 - [Fazer um carrossel de LLMs para responder as questões discursivas, usando as chaves em '.env.local']
+- [Mensagens de commit seguem Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `ci:`, ...), validado automaticamente pelo hook `commit-msg` do husky + commitlint.]
 ## Não fazer
 - [Não introduzir arquitetura de microsserviços.]
 - [Não escrever SQL cru fora do schema/migrações do Prisma.]

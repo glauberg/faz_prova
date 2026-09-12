@@ -1,8 +1,8 @@
 # Status dos Requisitos
 
 * **Projeto:** faz_prova
-* **Data:** 06/09/2026
-* **Fontes:** `docs/etapa2-funcionalidades.md`, `openspec/specs/criacao-questionario/spec.md`, `docs/spec-manual/correcao-questoes/spec.md`
+* **Data:** 11/09/2026
+* **Fontes:** `docs/etapa2-funcionalidades.md`, `openspec/specs/criacao-questionario/spec.md`, `docs/spec-manual/correcao-questoes/spec.md`, `openspec/changes/archive/2026-09-06-adiciona-persistencia-prisma-supabase`
 
 Este documento consolida os requisitos planejados para as duas funcionalidades do escopo da atividade (ver `docs/escopo.md`), indicando o que já foi implementado e o que ficou pendente.
 
@@ -47,17 +47,37 @@ Spec: `docs/spec-manual/correcao-questoes/spec.md` · Código: `src/resposta.ts`
 
 Nenhum requisito da spec `correcao-questoes` ficou pendente.
 
+## Persistência (Prova e ResultadoProva)
+
+Change: `openspec/changes/archive/2026-09-06-adiciona-persistencia-prisma-supabase` · Código: `src/persistence/` (`prisma.ts`, `provaRepository.ts`, `resultadoRepository.ts`) · Schema: `prisma/schema.prisma`
+
+### Requisitos implementados
+
+- [x] Persistir uma `Prova` (com suas `Questao`) no Postgres via Supabase, isolado no schema `gestor_provas`
+- [x] Persistir um `ResultadoProva` (com o detalhamento por `ResultadoQuestao`) associado a uma `Prova` existente
+- [x] Recuperar uma `Prova` salva pelo id
+- [x] Recuperar um `ResultadoProva` salvo pelo id
+- [x] Acesso ao banco exclusivamente via Prisma Client, isolado na camada `src/persistence/` (sem SQL cru, sem regra de negócio na camada de persistência)
+- [x] Conexão em runtime via `DATABASE_URL` (pooled, `@prisma/adapter-pg`); comandos do Prisma CLI (`migrate`, `studio`) via `DIRECT_URL`, configurados em `prisma.config.ts`
+- [x] API HTTP (`src/app/api/`) orquestrando `domain` + `persistence`: `POST /api/provas`, `GET /api/provas/:id`, `POST /api/provas/:id/correcoes`, `GET /api/resultados/:id`
+- [x] Frontend mínimo (`src/app/**/page.tsx`) consumindo apenas as API routes: criar prova, ver prova, corrigir, ver resultado
+
+### Requisitos pendentes
+
+Nenhum requisito da change `adiciona-persistencia-prisma-supabase` ficou pendente.
+
 ## Fora de escopo (decisão documentada, não é pendência)
 
-Os itens abaixo foram deliberadamente excluídos do escopo da atividade em `docs/etapa2-funcionalidades.md` e no `CLAUDE.md` ("Não fazer") — não representam trabalho faltando, mas limites explícitos do que foi planejado:
+Os itens abaixo foram deliberadamente excluídos do escopo da atividade em `docs/etapa2-funcionalidades.md` e no `CLAUDE.md` ("Próxima etapa" / "Não fazer") — não representam trabalho faltando, mas limites explícitos do que foi planejado:
 
-- Persistência em banco de dados (da prova ou do resultado da correção)
 - Autenticação
-- Exportação para PDF
-- Correção automática de questões discursivas
+- Exportação de provas para PDF
+- Correção automática de questões discursivas usando IA (incluindo o "carrossel de LLMs" previsto nas Convenções do `CLAUDE.md`)
 - Geração de feedback textual automático
+- Scripts de dados de demonstração (`povoar` / `limpar`)
 
 ## Verificação
 
-- `npm test`: 18/18 testes passando, cobrindo todos os cenários de aceite de ambas as specs.
+- `npm test`: 18/18 testes passando, cobrindo todos os cenários de aceite das specs `criacao-questionario` e `correcao-questoes`.
 - `src/cli.ts` é um script de demonstração manual que integra as Funcionalidades A e B usando apenas funções já testadas; não introduz requisito novo.
+- Persistência verificada via `npm run db:migrate` (schema `gestor_provas` aplicado no Supabase) e uso manual das rotas de API.

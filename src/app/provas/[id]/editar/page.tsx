@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SeletorQuestoesBanco } from "../../../_components/SeletorQuestoesBanco.tsx";
+import styles from "../../provas.module.css";
 
 export default function EditarProvaPage() {
   const { id } = useParams<{ id: string }>();
@@ -46,41 +48,77 @@ export default function EditarProvaPage() {
       const dados = await resposta.json();
 
       if (!resposta.ok) {
-        setErro(dados.erro ?? "não foi possível salvar as alterações");
+        setErro(dados.erro ?? "Não foi possível salvar as alterações.");
         return;
       }
 
       router.push(`/provas/${id}`);
+    } catch {
+      setErro("Erro de conexão ao tentar atualizar a prova.");
     } finally {
       setEnviando(false);
     }
   }
 
   if (carregando) {
-    return <p>Carregando...</p>;
+    return (
+      <main className={styles.container}>
+        <div className={styles.emptyState}>Carregando dados da prova...</div>
+      </main>
+    );
   }
 
   return (
-    <main>
-      <h1>Editar prova</h1>
-      <form onSubmit={enviar}>
-        <label>
-          Título
+    <main className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.titleGroup}>
+          <h1 className={styles.title}>Editar Prova</h1>
+          <p className={styles.subtitle}>
+            Altere o título ou a seleção de questões desta avaliação.
+          </p>
+        </div>
+
+        <Link href={`/provas/${id}`} className={styles.secondaryBtn}>
+          &larr; Voltar para Prova
+        </Link>
+      </header>
+
+      <form className={styles.formCard} onSubmit={enviar}>
+        <div className={styles.formGroup}>
+          <label className={styles.formLabel} htmlFor="titulo-prova">
+            Título da Prova
+          </label>
           <input
+            id="titulo-prova"
             type="text"
+            className={styles.formInput}
             value={titulo}
             onChange={(evento) => setTitulo(evento.target.value)}
             required
+            disabled={enviando}
           />
-        </label>
+        </div>
 
         <SeletorQuestoesBanco selecionadas={questaoBancoIds} onChange={setQuestaoBancoIds} />
 
-        {erro && <p className="erro">{erro}</p>}
+        {erro && (
+          <div className="erro" role="alert">
+            {erro}
+          </div>
+        )}
 
-        <button type="submit" disabled={enviando || questaoBancoIds.length === 0}>
-          {enviando ? "Salvando..." : "Salvar alterações"}
-        </button>
+        <div className={styles.formFooter}>
+          <Link href={`/provas/${id}`} className={styles.secondaryBtn}>
+            Cancelar
+          </Link>
+          <button
+            type="submit"
+            className={styles.primaryBtn}
+            disabled={enviando || questaoBancoIds.length === 0}
+          >
+            {enviando ? "Salvando..." : "Salvar Alterações"}
+          </button>
+        </div>
       </form>
     </main>
   );

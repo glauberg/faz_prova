@@ -66,6 +66,20 @@ Change: `openspec/changes/archive/2026-09-06-adiciona-persistencia-prisma-supaba
 
 Nenhum requisito da change `adiciona-persistencia-prisma-supabase` ficou pendente.
 
+## Dados de demonstração (scripts `povoar` / `limpar`)
+
+Código: `src/dadosDemonstracao.ts`, `src/povoar.ts`, `src/limpar.ts`, `src/persistence/manutencaoRepository.ts` · Testes: `src/dadosDemonstracao.test.ts`
+
+### Requisitos implementados
+
+- [x] `npm run povoar` cria um conjunto fixo de provas de demonstração (com questões dos quatro tipos) e resultados de correção para alunos fictícios, via `persistence`
+- [x] `npm run limpar` remove todas as provas, questões e resultados do banco, via `persistence` (`limparBaseDeDemonstracao`)
+- [x] Dados de demonstração validados por teste automatizado: cada prova é aceita por `montarProva` e as respostas de cada aluno referenciam apenas questões existentes na prova
+
+### Requisitos pendentes
+
+Nenhum.
+
 ## Fora de escopo (decisão documentada, não é pendência)
 
 Os itens abaixo foram deliberadamente excluídos do escopo da atividade em `docs/etapa2-funcionalidades.md` e no `CLAUDE.md` ("Próxima etapa" / "Não fazer") — não representam trabalho faltando, mas limites explícitos do que foi planejado:
@@ -74,10 +88,10 @@ Os itens abaixo foram deliberadamente excluídos do escopo da atividade em `docs
 - Exportação de provas para PDF
 - Correção automática de questões discursivas usando IA (incluindo o "carrossel de LLMs" previsto nas Convenções do `CLAUDE.md`)
 - Geração de feedback textual automático
-- Scripts de dados de demonstração (`povoar` / `limpar`)
 
 ## Verificação
 
-- `npm test`: 18/18 testes passando, cobrindo todos os cenários de aceite das specs `criacao-questionario` e `correcao-questoes`.
+- `npm test`: 20/20 testes passando, cobrindo todos os cenários de aceite das specs `criacao-questionario` e `correcao-questoes`, além da validade dos dados de demonstração.
 - `src/cli.ts` é um script de demonstração manual que integra as Funcionalidades A e B usando apenas funções já testadas; não introduz requisito novo.
 - Persistência verificada via `npm run db:migrate` (schema `gestor_provas` aplicado no Supabase) e uso manual das rotas de API.
+- `npm run povoar` e `npm run limpar` executados manualmente contra o banco de desenvolvimento (Supabase), confirmando criação e remoção correta dos registros.

@@ -2,13 +2,11 @@
 ## Sobre o projeto
 [O Gestor de Provas é um monorepo web para auxiliar professores na criação, correção e organização de avaliações. A aplicação permite a criação de questionários de questões discursivas, múltipla escolha, dicotômicas e resposta única.]
 ## Próxima etapa (planejada)
-[As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Itens abaixo continuam fora de escopo:]
+[As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Os scripts de dados de demonstração (`povoar`/`limpar`) também já estão implementados — ver seção "Comandos" abaixo. Itens abaixo continuam fora de escopo:]
 - [Autenticação.]
 - [Exportação de provas para PDF.]
 - [Correção automática de questões discursivas usando IA.]
 - [Geração de feedback textual automático.]
-- [Criar dados de demonstração na base com o script 'povoar'.]
-- [Criar um script para limpar a base de demonstração - 'limpar'.]
 ## Estrutura do monorepo
 [Um único app Next.js (App Router) hospeda frontend e backend — sem microsserviços, sem repositórios/deploys separados:]
 - [`src/domain/`] -> [Lógica de negócio pura (tipos e validações de `Prova`, `Questao`, `RespostaAluno`, `ResultadoProva`, e a correção). Sem dependência de framework web nem de Prisma.]
@@ -19,6 +17,8 @@
 - [`prisma.config.ts`] -> [Configuração do Prisma CLI (schema, migrations). Usa `DIRECT_URL` para comandos como `migrate`; `PrismaClient` em runtime usa `DATABASE_URL` (pooled) via `@prisma/adapter-pg`, configurado em `src/persistence/prisma.ts`.]
 - [`src/generated/prisma/`] -> [Prisma Client gerado (`npm run db:generate`). Não é versionado (`.gitignore`) nem editado manualmente.]
 - [`src/cli.ts`] -> [Script de demonstração via terminal, independente do app Next.js.]
+- [`src/dadosDemonstracao.ts`] -> [Conjunto fixo de provas/respostas de demonstração usado pelo script `povoar`. Puro `domain`, sem Prisma.]
+- [`src/povoar.ts` / `src/limpar.ts`] -> [Scripts de terminal que populam e limpam a base de demonstração via `persistence`.]
 ## API (backend)
 [Rotas em `src/app/api/`, cada uma só orquestrando `domain` + `persistence` (sem regra de negócio própria):]
 - [`POST /api/provas`] -> [Valida (`montarProva`) e persiste uma prova. 400 se inválida.]
@@ -36,6 +36,8 @@
 - [npm run db:migrate] -> [Cria/aplica migrações do schema Prisma no Supabase (usa `--env-file=.env.local`; a conexão para o CLI vem de `DIRECT_URL`, configurada em `prisma.config.ts`).]
 - [npm run db:generate] -> [Gera o Prisma Client (`src/generated/prisma`) a partir do schema. Não precisa de conexão com o banco — roda também no CI. Executado automaticamente no `postinstall`.]
 - [npm run db:studio] -> [Abre o Prisma Studio para inspecionar o banco (usa `--env-file=.env.local`).]
+- [npm run povoar] -> [Popula o banco com provas e resultados de demonstração fixos (`src/dadosDemonstracao.ts`), usando `--env-file=.env.local`.]
+- [npm run limpar] -> [Remove todas as provas, questões e resultados do banco (usa `--env-file=.env.local`).]
 ## Convenções de código
 - [Utilizar TypeScript como linguagem principal.]
 - [Utilizar nomes de variáveis, funções e componentes que expressem claramente sua finalidade.]

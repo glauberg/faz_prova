@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test src/**/*.test.ts",
+    "test": "node --test src/*.test.ts src/**/*.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -16,7 +16,9 @@
     "postinstall": "prisma generate",
     "db:migrate": "node --env-file=.env.local node_modules/.bin/prisma migrate dev",
     "db:generate": "prisma generate",
-    "db:studio": "node --env-file=.env.local node_modules/.bin/prisma studio"
+    "db:studio": "node --env-file=.env.local node_modules/.bin/prisma studio",
+    "povoar": "node --env-file=.env.local src/povoar.ts",
+    "limpar": "node --env-file=.env.local src/limpar.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

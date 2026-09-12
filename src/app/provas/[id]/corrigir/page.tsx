@@ -11,7 +11,7 @@ export default function CorrigirProvaPage() {
   const router = useRouter();
   const [prova, setProva] = useState<Prova | null>(null);
   const [alunoId, setAlunoId] = useState("");
-  const [respostas, setRespostas] = useState<Map<number, string | boolean>>(new Map());
+  const [respostas, setRespostas] = useState<Map<number, string | boolean | string[]>>(new Map());
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -28,7 +28,7 @@ export default function CorrigirProvaPage() {
       .catch(() => setErro("erro ao carregar a prova"));
   }, [id]);
 
-  function definirResposta(indice: number, valor: string | boolean) {
+  function definirResposta(indice: number, valor: string | boolean | string[]) {
     setRespostas((atual) => new Map(atual).set(indice, valor));
   }
 

@@ -9,6 +9,7 @@ test("prova é montada com sucesso quando há título e questões válidas", () 
     {
       tipo: "resposta-unica",
       enunciado: "Qual o resultado de 2+2?",
+      alternativas: ["3", "4", "5"],
       gabarito: "4",
     },
   ];

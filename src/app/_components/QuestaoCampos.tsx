@@ -57,9 +57,8 @@ export function QuestaoCampos({ questao, onChange }: QuestaoCamposProps) {
             />
           </label>
           <label>
-            Gabarito (deve ser igual a uma das alternativas)
-            <input
-              type="text"
+            Gabarito (uma ou mais alternativas corretas, uma por linha)
+            <textarea
               value={questao.gabaritoTexto}
               onChange={(evento) => onChange({ ...questao, gabaritoTexto: evento.target.value })}
             />
@@ -83,14 +82,25 @@ export function QuestaoCampos({ questao, onChange }: QuestaoCamposProps) {
       )}
 
       {questao.tipo === "resposta-unica" && (
-        <label>
-          Gabarito
-          <input
-            type="text"
-            value={questao.gabaritoTexto}
-            onChange={(evento) => onChange({ ...questao, gabaritoTexto: evento.target.value })}
-          />
-        </label>
+        <>
+          <label>
+            Alternativas (uma por linha)
+            <textarea
+              value={questao.alternativasTexto}
+              onChange={(evento) =>
+                onChange({ ...questao, alternativasTexto: evento.target.value })
+              }
+            />
+          </label>
+          <label>
+            Gabarito (deve ser igual a uma das alternativas)
+            <input
+              type="text"
+              value={questao.gabaritoTexto}
+              onChange={(evento) => onChange({ ...questao, gabaritoTexto: evento.target.value })}
+            />
+          </label>
+        </>
       )}
     </fieldset>
   );

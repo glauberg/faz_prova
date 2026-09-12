@@ -6,6 +6,8 @@
 
 Este documento consolida os requisitos planejados para as duas funcionalidades do escopo da atividade (ver `docs/escopo.md`), indicando o que já foi implementado e o que ficou pendente.
 
+> **Nota (12/09/2026):** após a entrega original, a semântica de `multipla-escolha` e `resposta-unica` foi ajustada a pedido do usuário: `multipla-escolha` passou a aceitar uma ou mais alternativas corretas (gabarito em lista) e `resposta-unica` passou a exigir uma lista de alternativas com exatamente uma correta (antes era resposta de texto livre). Os itens abaixo refletem os critérios de aceite originais; o comportamento atual está documentado em `CLAUDE.md` ("Tipos de questão objetiva").
+
 ## Funcionalidade A — Criação de questionário
 
 Spec: `openspec/specs/criacao-questionario/spec.md` · Código: `src/questao.ts`, `src/prova.ts` · Testes: `src/prova.test.ts`, `src/questao.test.ts`

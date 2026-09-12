@@ -4,8 +4,16 @@ export interface QuestaoRascunho {
   tipo: Questao["tipo"];
   enunciado: string;
   alternativasTexto: string;
+  /** resposta-unica: uma linha; multipla-escolha: uma ou mais linhas */
   gabaritoTexto: string;
   gabaritoBooleano: boolean;
+}
+
+function linhas(texto: string): string[] {
+  return texto
+    .split("\n")
+    .map((linha) => linha.trim())
+    .filter((linha) => linha.length > 0);
 }
 
 export function novaQuestaoRascunho(): QuestaoRascunho {
@@ -34,12 +42,16 @@ export function paraQuestaoRascunho(questao: Questao): QuestaoRascunho {
       return {
         ...base,
         alternativasTexto: questao.alternativas.join("\n"),
-        gabaritoTexto: questao.gabarito,
+        gabaritoTexto: questao.gabarito.join("\n"),
       };
     case "dicotomica":
       return { ...base, gabaritoBooleano: questao.gabarito };
     case "resposta-unica":
-      return { ...base, gabaritoTexto: questao.gabarito };
+      return {
+        ...base,
+        alternativasTexto: questao.alternativas.join("\n"),
+        gabaritoTexto: questao.gabarito,
+      };
   }
 }
 
@@ -51,11 +63,8 @@ export function paraQuestaoDominio(rascunho: QuestaoRascunho): Questao {
       return {
         tipo: "multipla-escolha",
         enunciado: rascunho.enunciado,
-        alternativas: rascunho.alternativasTexto
-          .split("\n")
-          .map((linha) => linha.trim())
-          .filter((linha) => linha.length > 0),
-        gabarito: rascunho.gabaritoTexto,
+        alternativas: linhas(rascunho.alternativasTexto),
+        gabarito: linhas(rascunho.gabaritoTexto),
       };
     case "dicotomica":
       return {
@@ -67,6 +76,7 @@ export function paraQuestaoDominio(rascunho: QuestaoRascunho): Questao {
       return {
         tipo: "resposta-unica",
         enunciado: rascunho.enunciado,
+        alternativas: linhas(rascunho.alternativasTexto),
         gabarito: rascunho.gabaritoTexto,
       };
   }

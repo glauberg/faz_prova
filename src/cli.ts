@@ -8,10 +8,15 @@ const questoes: Questao[] = [
     tipo: "multipla-escolha",
     enunciado: "Qual a capital do Brasil?",
     alternativas: ["São Paulo", "Brasília", "Rio de Janeiro"],
-    gabarito: "Brasília",
+    gabarito: ["Brasília"],
   },
   { tipo: "dicotomica", enunciado: "A Terra é redonda.", gabarito: true },
-  { tipo: "resposta-unica", enunciado: "Quanto é 6 x 7?", gabarito: "42" },
+  {
+    tipo: "resposta-unica",
+    enunciado: "Quanto é 6 x 7?",
+    alternativas: ["40", "42", "48"],
+    gabarito: "42",
+  },
   { tipo: "discursiva", enunciado: "Explique o ciclo da água." },
 ];
 
@@ -23,7 +28,7 @@ prova.questoes.forEach((questao, indice) => {
 });
 
 const respostasDoAluno: RespostaAluno[] = [
-  { questaoIndice: 0, valor: "Brasília" },
+  { questaoIndice: 0, valor: ["Brasília"] },
   { questaoIndice: 1, valor: false },
   { questaoIndice: 2, valor: "42" },
 ];

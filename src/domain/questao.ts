@@ -7,7 +7,8 @@ export interface QuestaoMultiplaEscolha {
   tipo: "multipla-escolha";
   enunciado: string;
   alternativas: string[];
-  gabarito: string;
+  /** uma ou mais alternativas corretas */
+  gabarito: string[];
 }
 
 export interface QuestaoDicotomica {
@@ -19,6 +20,8 @@ export interface QuestaoDicotomica {
 export interface QuestaoRespostaUnica {
   tipo: "resposta-unica";
   enunciado: string;
+  alternativas: string[];
+  /** exatamente uma alternativa correta */
   gabarito: string;
 }
 
@@ -43,10 +46,10 @@ export function validarQuestao(questao: Questao): string[] {
       if (!questao.alternativas || questao.alternativas.length < 2) {
         erros.push("questão de múltipla escolha exige ao menos duas alternativas");
       }
-      if (!questao.gabarito || questao.gabarito.trim() === "") {
+      if (!questao.gabarito || questao.gabarito.length === 0) {
         erros.push("gabarito é obrigatório");
-      } else if (!questao.alternativas?.includes(questao.gabarito)) {
-        erros.push("gabarito deve corresponder a uma das alternativas");
+      } else if (questao.gabarito.some((item) => !questao.alternativas?.includes(item))) {
+        erros.push("gabarito deve corresponder a alternativas existentes");
       }
       break;
     case "dicotomica":
@@ -55,8 +58,13 @@ export function validarQuestao(questao: Questao): string[] {
       }
       break;
     case "resposta-unica":
+      if (!questao.alternativas || questao.alternativas.length < 2) {
+        erros.push("questão de resposta única exige ao menos duas alternativas");
+      }
       if (!questao.gabarito || questao.gabarito.trim() === "") {
         erros.push("gabarito é obrigatório");
+      } else if (!questao.alternativas?.includes(questao.gabarito)) {
+        erros.push("gabarito deve corresponder a uma das alternativas");
       }
       break;
   }

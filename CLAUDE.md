@@ -1,6 +1,12 @@
 # CLAUDE.md
 ## Sobre o projeto
 [O Gestor de Provas é um monorepo web para auxiliar professores na criação, correção e organização de avaliações. A aplicação permite a criação de questionários de questões discursivas, múltipla escolha, dicotômicas e resposta única.]
+
+### Tipos de questão objetiva
+[Distinção deliberada entre os dois tipos com alternativas:]
+- [`multipla-escolha`] -> [uma ou mais alternativas podem ser marcadas como corretas (`gabarito: string[]`); o aluno responde marcando um subconjunto de alternativas (checkboxes) e só acerta se marcar exatamente o mesmo conjunto do gabarito.]
+- [`resposta-unica`] -> [exatamente uma alternativa correta (`gabarito: string`) entre uma lista de alternativas (`alternativas: string[]`); o aluno escolhe uma única opção (select).]
+- [`dicotomica` e `discursiva` não mudaram.]
 ## Próxima etapa (planejada)
 [As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Os scripts de dados de demonstração (`povoar`/`limpar`), a geração de questões por IA (carrossel de LLMs), a autenticação de professor e a exportação de provas para PDF também já estão implementados. Itens abaixo continuam fora de escopo:]
 - [Correção automática de questões discursivas usando IA.]
@@ -15,7 +21,7 @@
 - [`prisma.config.ts`] -> [Configuração do Prisma CLI (schema, migrations). Usa `DIRECT_URL` para comandos como `migrate`; `PrismaClient` em runtime usa `DATABASE_URL` (pooled) via `@prisma/adapter-pg`, configurado em `src/persistence/prisma.ts`.]
 - [`src/generated/prisma/`] -> [Prisma Client gerado (`npm run db:generate`). Não é versionado (`.gitignore`) nem editado manualmente.]
 - [`src/cli.ts`] -> [Script de demonstração via terminal, independente do app Next.js.]
-- [`src/dadosDemonstracao.ts`] -> [Conjunto fixo de provas/respostas de demonstração usado pelo script `povoar`. Puro `domain`, sem Prisma.]
+- [`src/dadosDemonstracao.ts`] -> [Banco de 25 questões de demonstração (Português e Matemática, nível fundamental: 10 múltipla-escolha, 5 discursivas, 5 dicotômicas, 5 resposta-única) e as 2 provas prontas ("Prova de Português", "Prova de Matemática") montadas a partir delas, usados pelo script `povoar`. Puro `domain`, sem Prisma.]
 - [`src/povoar.ts` / `src/limpar.ts`] -> [Scripts de terminal que populam e limpam a base de demonstração via `persistence`.]
 - [`src/domain/geracaoQuestoes.ts`] -> [Lógica pura (sem I/O) de geração de questões por IA: monta o prompt por tipo de questão e interpreta/valida o JSON retornado, usando `validarQuestao`.]
 - [`src/integracoes/llm/`] -> [Camada de integração com provedores externos de IA (OpenRouter, Groq) e o carrossel round-robin com fallback entre eles. Único ponto de chamada às APIs de LLM.]
@@ -63,8 +69,8 @@
 - [npm run db:migrate] -> [Cria/aplica migrações do schema Prisma no Supabase (usa `--env-file=.env.local`; a conexão para o CLI vem de `DIRECT_URL`, configurada em `prisma.config.ts`).]
 - [npm run db:generate] -> [Gera o Prisma Client (`src/generated/prisma`) a partir do schema. Não precisa de conexão com o banco — roda também no CI. Executado automaticamente no `postinstall`.]
 - [npm run db:studio] -> [Abre o Prisma Studio para inspecionar o banco (usa `--env-file=.env.local`).]
-- [npm run povoar] -> [Popula o banco com provas e resultados de demonstração fixos (`src/dadosDemonstracao.ts`), usando `--env-file=.env.local`.]
-- [npm run limpar] -> [Remove todas as provas, questões e resultados do banco (usa `--env-file=.env.local`).]
+- [npm run povoar] -> [Cria o professor de demonstração, popula o banco de questões com as 25 questões fixas (`src/dadosDemonstracao.ts`) e monta as 2 provas prontas a partir delas, com resultados de correção de exemplo. Usa `--env-file=.env.local`.]
+- [npm run limpar] -> [Remove todas as provas, questões (de prova e do banco), resultados e professores (usa `--env-file=.env.local`).]
 ## Convenções de código
 - [Utilizar TypeScript como linguagem principal.]
 - [Utilizar nomes de variáveis, funções e componentes que expressem claramente sua finalidade.]

@@ -5,7 +5,8 @@ async function limpar(): Promise<void> {
   const contagem = await limparBaseDeDemonstracao();
   console.log("Base de demonstração limpa:");
   console.log(`  ${contagem.provas} prova(s)`);
-  console.log(`  ${contagem.questoes} questão(ões)`);
+  console.log(`  ${contagem.questoes} questão(ões) de prova`);
+  console.log(`  ${contagem.questoesBanco} questão(ões) do banco`);
   console.log(`  ${contagem.resultadosProva} resultado(s) de prova`);
   console.log(`  ${contagem.resultadosQuestao} resultado(s) de questão`);
   console.log(`  ${contagem.professores} professor(es)`);

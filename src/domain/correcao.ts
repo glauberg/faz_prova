@@ -2,10 +2,24 @@ import type { Prova } from "./prova.ts";
 import type { Questao } from "./questao.ts";
 import type { RespostaAluno, ResultadoProva, ResultadoQuestao } from "./resposta.ts";
 
-function respostaEstaCorreta(questao: Questao, valor: string | boolean): boolean {
+function conjuntosIguais(a: string[], b: string[]): boolean {
+  const setA = new Set(a);
+  const setB = new Set(b);
+  if (setA.size !== setB.size) {
+    return false;
+  }
+  for (const item of setA) {
+    if (!setB.has(item)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function respostaEstaCorreta(questao: Questao, valor: string | boolean | string[]): boolean {
   switch (questao.tipo) {
     case "multipla-escolha":
-      return valor === questao.gabarito;
+      return Array.isArray(valor) && conjuntosIguais(valor, questao.gabarito);
     case "dicotomica":
       return valor === questao.gabarito;
     case "resposta-unica":

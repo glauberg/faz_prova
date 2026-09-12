@@ -9,9 +9,10 @@ export interface PedidoGeracaoQuestao {
 const FORMATO_POR_TIPO: Record<Questao["tipo"], string> = {
   discursiva: '{"enunciado": "..."}',
   "multipla-escolha":
-    '{"enunciado": "...", "alternativas": ["...", "...", "..."], "gabarito": "<uma das alternativas, exatamente igual>"}',
+    '{"enunciado": "...", "alternativas": ["...", "...", "..."], "gabarito": ["<uma ou mais alternativas corretas, exatamente iguais às do array alternativas>"]}',
   dicotomica: '{"enunciado": "...", "gabarito": true}',
-  "resposta-unica": '{"enunciado": "...", "gabarito": "..."}',
+  "resposta-unica":
+    '{"enunciado": "...", "alternativas": ["...", "...", "..."], "gabarito": "<exatamente uma das alternativas>"}',
 };
 
 export function montarPromptQuestao(pedido: PedidoGeracaoQuestao): string {
@@ -61,14 +62,23 @@ export function interpretarQuestaoGerada(tipo: Questao["tipo"], textoResposta: s
         tipo: "multipla-escolha",
         enunciado,
         alternativas: Array.isArray(bruto.alternativas) ? bruto.alternativas.map(String) : [],
-        gabarito: String(bruto.gabarito ?? ""),
+        gabarito: Array.isArray(bruto.gabarito)
+          ? bruto.gabarito.map(String)
+          : bruto.gabarito !== undefined
+            ? [String(bruto.gabarito)]
+            : [],
       };
       break;
     case "dicotomica":
       questao = { tipo: "dicotomica", enunciado, gabarito: paraBooleano(bruto.gabarito) };
       break;
     case "resposta-unica":
-      questao = { tipo: "resposta-unica", enunciado, gabarito: String(bruto.gabarito ?? "") };
+      questao = {
+        tipo: "resposta-unica",
+        enunciado,
+        alternativas: Array.isArray(bruto.alternativas) ? bruto.alternativas.map(String) : [],
+        gabarito: String(bruto.gabarito ?? ""),
+      };
       break;
   }
 

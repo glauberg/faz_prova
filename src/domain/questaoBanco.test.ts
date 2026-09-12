@@ -33,7 +33,7 @@ test("propaga erros de validação da questão", () => {
       tipo: "multipla-escolha",
       enunciado: "Quanto é 2+2?",
       alternativas: ["4"],
-      gabarito: "4",
+      gabarito: ["4"],
     },
   });
   assert.ok(erros.length > 0);

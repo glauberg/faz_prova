@@ -7,12 +7,22 @@ test("questão discursiva com enunciado é válida", () => {
   assert.deepEqual(validarQuestao(questao), []);
 });
 
-test("questão de múltipla escolha válida", () => {
+test("questão de múltipla escolha válida com uma resposta correta", () => {
   const questao: Questao = {
     tipo: "multipla-escolha",
     enunciado: "Qual a capital do Brasil?",
     alternativas: ["São Paulo", "Brasília", "Rio de Janeiro"],
-    gabarito: "Brasília",
+    gabarito: ["Brasília"],
+  };
+  assert.deepEqual(validarQuestao(questao), []);
+});
+
+test("questão de múltipla escolha válida com mais de uma resposta correta", () => {
+  const questao: Questao = {
+    tipo: "multipla-escolha",
+    enunciado: "Quais são números primos?",
+    alternativas: ["2", "3", "4", "6"],
+    gabarito: ["2", "3"],
   };
   assert.deepEqual(validarQuestao(questao), []);
 });
@@ -22,7 +32,17 @@ test("questão de múltipla escolha sem alternativas suficientes é rejeitada", 
     tipo: "multipla-escolha",
     enunciado: "Pergunta",
     alternativas: ["única opção"],
-    gabarito: "única opção",
+    gabarito: ["única opção"],
+  };
+  assert.notEqual(validarQuestao(questao).length, 0);
+});
+
+test("questão de múltipla escolha sem gabarito é rejeitada", () => {
+  const questao: Questao = {
+    tipo: "multipla-escolha",
+    enunciado: "Pergunta",
+    alternativas: ["A", "B"],
+    gabarito: [],
   };
   assert.notEqual(validarQuestao(questao).length, 0);
 });
@@ -32,7 +52,7 @@ test("questão de múltipla escolha com gabarito inválido é rejeitada", () => 
     tipo: "multipla-escolha",
     enunciado: "Pergunta",
     alternativas: ["A", "B"],
-    gabarito: "C",
+    gabarito: ["C"],
   };
   assert.notEqual(validarQuestao(questao).length, 0);
 });
@@ -56,13 +76,38 @@ test("questão de resposta única válida", () => {
   const questao: Questao = {
     tipo: "resposta-unica",
     enunciado: "Qual o resultado de 2+2?",
+    alternativas: ["3", "4", "5"],
     gabarito: "4",
   };
   assert.deepEqual(validarQuestao(questao), []);
 });
 
+test("questão de resposta única sem alternativas suficientes é rejeitada", () => {
+  const questao: Questao = {
+    tipo: "resposta-unica",
+    enunciado: "Pergunta",
+    alternativas: ["única opção"],
+    gabarito: "única opção",
+  };
+  assert.notEqual(validarQuestao(questao).length, 0);
+});
+
+test("questão de resposta única com gabarito fora das alternativas é rejeitada", () => {
+  const questao: Questao = {
+    tipo: "resposta-unica",
+    enunciado: "Pergunta",
+    alternativas: ["A", "B"],
+    gabarito: "C",
+  };
+  assert.notEqual(validarQuestao(questao).length, 0);
+});
+
 test("questão de resposta única sem gabarito é rejeitada", () => {
-  const questao = { tipo: "resposta-unica", enunciado: "Pergunta" } as unknown as Questao;
+  const questao = {
+    tipo: "resposta-unica",
+    enunciado: "Pergunta",
+    alternativas: ["A", "B"],
+  } as unknown as Questao;
   assert.notEqual(validarQuestao(questao).length, 0);
 });
 

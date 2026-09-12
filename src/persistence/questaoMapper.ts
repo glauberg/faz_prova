@@ -32,6 +32,7 @@ export interface CamposQuestaoDb {
   enunciado: string;
   alternativas: string[];
   gabaritoTexto: string | null;
+  gabaritoMultiplo: string[];
   gabaritoBooleano: boolean | null;
 }
 
@@ -39,11 +40,12 @@ export function questaoParaCampos(questao: Questao): CamposQuestaoDb {
   return {
     tipo: tipoParaDb(questao.tipo),
     enunciado: questao.enunciado,
-    alternativas: questao.tipo === "multipla-escolha" ? questao.alternativas : [],
-    gabaritoTexto:
+    alternativas:
       questao.tipo === "multipla-escolha" || questao.tipo === "resposta-unica"
-        ? questao.gabarito
-        : null,
+        ? questao.alternativas
+        : [],
+    gabaritoTexto: questao.tipo === "resposta-unica" ? questao.gabarito : null,
+    gabaritoMultiplo: questao.tipo === "multipla-escolha" ? questao.gabarito : [],
     gabaritoBooleano: questao.tipo === "dicotomica" ? questao.gabarito : null,
   };
 }
@@ -58,11 +60,16 @@ export function camposParaQuestao(campos: CamposQuestaoDb): Questao {
         tipo,
         enunciado: campos.enunciado,
         alternativas: campos.alternativas,
-        gabarito: campos.gabaritoTexto ?? "",
+        gabarito: campos.gabaritoMultiplo,
       };
     case "dicotomica":
       return { tipo, enunciado: campos.enunciado, gabarito: campos.gabaritoBooleano ?? false };
     case "resposta-unica":
-      return { tipo, enunciado: campos.enunciado, gabarito: campos.gabaritoTexto ?? "" };
+      return {
+        tipo,
+        enunciado: campos.enunciado,
+        alternativas: campos.alternativas,
+        gabarito: campos.gabaritoTexto ?? "",
+      };
   }
 }

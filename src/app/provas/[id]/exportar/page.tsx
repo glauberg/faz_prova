@@ -56,7 +56,7 @@ export default function ExportarProvaPage() {
             <li key={indice}>
               <p>{questao.enunciado}</p>
 
-              {questao.tipo === "multipla-escolha" && (
+              {(questao.tipo === "multipla-escolha" || questao.tipo === "resposta-unica") && (
                 <ol type="a">
                   {questao.alternativas.map((alternativa) => (
                     <li key={alternativa}>{alternativa}</li>
@@ -75,7 +75,9 @@ export default function ExportarProvaPage() {
                     ? questao.gabarito
                       ? "Verdadeiro"
                       : "Falso"
-                    : questao.gabarito}
+                    : questao.tipo === "multipla-escolha"
+                      ? questao.gabarito.join(", ")
+                      : questao.gabarito}
                 </p>
               )}
             </li>

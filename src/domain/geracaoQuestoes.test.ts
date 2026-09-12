@@ -30,20 +30,53 @@ test("interpretarQuestaoGerada aceita JSON envolto em cerca de código markdown"
   assert.equal(questao.enunciado, "Explique a Revolução Francesa.");
 });
 
-test("interpretarQuestaoGerada aceita múltipla escolha válida", () => {
+test("interpretarQuestaoGerada aceita múltipla escolha com uma resposta correta", () => {
   const questao = interpretarQuestaoGerada(
     "multipla-escolha",
     JSON.stringify({
       enunciado: "Em que ano começou a Revolução Francesa?",
       alternativas: ["1789", "1799", "1804"],
-      gabarito: "1789",
+      gabarito: ["1789"],
     }),
   );
   assert.deepEqual(questao, {
     tipo: "multipla-escolha",
     enunciado: "Em que ano começou a Revolução Francesa?",
     alternativas: ["1789", "1799", "1804"],
-    gabarito: "1789",
+    gabarito: ["1789"],
+  });
+});
+
+test("interpretarQuestaoGerada aceita múltipla escolha com mais de uma resposta correta", () => {
+  const questao = interpretarQuestaoGerada(
+    "multipla-escolha",
+    JSON.stringify({
+      enunciado: "Quais eram estados do Antigo Regime francês?",
+      alternativas: ["Clero", "Nobreza", "Terceiro Estado", "Exército"],
+      gabarito: ["Clero", "Nobreza", "Terceiro Estado"],
+    }),
+  );
+  assert.deepEqual(questao.tipo === "multipla-escolha" && questao.gabarito, [
+    "Clero",
+    "Nobreza",
+    "Terceiro Estado",
+  ]);
+});
+
+test("interpretarQuestaoGerada aceita resposta única com alternativas", () => {
+  const questao = interpretarQuestaoGerada(
+    "resposta-unica",
+    JSON.stringify({
+      enunciado: "Quem liderou o Terror durante a Revolução Francesa?",
+      alternativas: ["Robespierre", "Napoleão", "Luís XVI"],
+      gabarito: "Robespierre",
+    }),
+  );
+  assert.deepEqual(questao, {
+    tipo: "resposta-unica",
+    enunciado: "Quem liderou o Terror durante a Revolução Francesa?",
+    alternativas: ["Robespierre", "Napoleão", "Luís XVI"],
+    gabarito: "Robespierre",
   });
 });
 

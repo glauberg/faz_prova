@@ -54,11 +54,14 @@ model Questao {
 
   enunciado String
 
-  // apenas multipla_escolha
+  // multipla_escolha e resposta_unica
   alternativas String[]
 
-  // multipla_escolha e resposta_unica
+  // resposta_unica: exatamente uma alternativa correta
   gabaritoTexto String?
+
+  // multipla_escolha: uma ou mais alternativas corretas
+  gabaritoMultiplo String[]
 
   // dicotomica
   gabaritoBooleano Boolean?
@@ -81,11 +84,14 @@ model QuestaoBanco {
 
   enunciado String
 
-  // apenas multipla_escolha
+  // multipla_escolha e resposta_unica
   alternativas String[]
 
-  // multipla_escolha e resposta_unica
+  // resposta_unica: exatamente uma alternativa correta
   gabaritoTexto String?
+
+  // multipla_escolha: uma ou mais alternativas corretas
+  gabaritoMultiplo String[]
 
   // dicotomica
   gabaritoBooleano Boolean?

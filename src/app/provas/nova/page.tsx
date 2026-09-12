@@ -2,10 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { Questao } from "../../../domain/questao.ts";
+import { GeracaoQuestoesIa } from "../../_components/GeracaoQuestoesIa.tsx";
 import { QuestaoCampos } from "../../_components/QuestaoCampos.tsx";
 import {
   novaQuestaoRascunho,
   paraQuestaoDominio,
+  paraQuestaoRascunho,
   type QuestaoRascunho,
 } from "../../_components/questaoRascunho.ts";
 
@@ -22,6 +25,10 @@ export default function NovaProvaPage() {
 
   function removerQuestao(indice: number) {
     setQuestoes((atual) => atual.filter((_, i) => i !== indice));
+  }
+
+  function adicionarQuestoesGeradas(geradas: Questao[]) {
+    setQuestoes((atual) => [...atual, ...geradas.map(paraQuestaoRascunho)]);
   }
 
   async function enviar(evento: React.FormEvent) {
@@ -61,6 +68,8 @@ export default function NovaProvaPage() {
             required
           />
         </label>
+
+        <GeracaoQuestoesIa onQuestoesGeradas={adicionarQuestoesGeradas} />
 
         {questoes.map((questao, indice) => (
           <QuestaoCampos

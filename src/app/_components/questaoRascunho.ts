@@ -18,6 +18,31 @@ export function novaQuestaoRascunho(): QuestaoRascunho {
   };
 }
 
+export function paraQuestaoRascunho(questao: Questao): QuestaoRascunho {
+  const base: QuestaoRascunho = {
+    tipo: questao.tipo,
+    enunciado: questao.enunciado,
+    alternativasTexto: "",
+    gabaritoTexto: "",
+    gabaritoBooleano: true,
+  };
+
+  switch (questao.tipo) {
+    case "discursiva":
+      return base;
+    case "multipla-escolha":
+      return {
+        ...base,
+        alternativasTexto: questao.alternativas.join("\n"),
+        gabaritoTexto: questao.gabarito,
+      };
+    case "dicotomica":
+      return { ...base, gabaritoBooleano: questao.gabarito };
+    case "resposta-unica":
+      return { ...base, gabaritoTexto: questao.gabarito };
+  }
+}
+
 export function paraQuestaoDominio(rascunho: QuestaoRascunho): Questao {
   switch (rascunho.tipo) {
     case "discursiva":

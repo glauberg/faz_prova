@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -38,6 +39,11 @@ export function BarraSessao() {
 
   return (
     <p className="no-imprimir">
+      {pathname !== "/" && (
+        <>
+          <Link href="/">Início</Link> ·{" "}
+        </>
+      )}
       {usuario} ·{" "}
       <button type="button" onClick={sair}>
         Sair

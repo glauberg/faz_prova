@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { BarraSessao } from "./_components/BarraSessao.tsx";
 import "./globals.css";
 
 export const metadata = {
@@ -9,7 +10,10 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <BarraSessao />
+        {children}
+      </body>
     </html>
   );
 }

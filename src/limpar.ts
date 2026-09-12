@@ -8,6 +8,7 @@ async function limpar(): Promise<void> {
   console.log(`  ${contagem.questoes} questão(ões)`);
   console.log(`  ${contagem.resultadosProva} resultado(s) de prova`);
   console.log(`  ${contagem.resultadosQuestao} resultado(s) de questão`);
+  console.log(`  ${contagem.professores} professor(es)`);
 }
 
 limpar()

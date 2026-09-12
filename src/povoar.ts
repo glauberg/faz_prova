@@ -2,10 +2,14 @@ import { PROVAS_DEMO } from "./dadosDemonstracao.ts";
 import { corrigirProva } from "./domain/correcao.ts";
 import { montarProva } from "./domain/prova.ts";
 import { prisma } from "./persistence/prisma.ts";
+import { criarOuAtualizarProfessor } from "./persistence/professorRepository.ts";
 import { salvarProva } from "./persistence/provaRepository.ts";
 import { salvarResultado } from "./persistence/resultadoRepository.ts";
 
 async function povoar(): Promise<void> {
+  await criarOuAtualizarProfessor("profteste", "prof123");
+  console.log('Professor de demonstração pronto: usuário "profteste", senha "prof123"');
+
   for (const provaDemo of PROVAS_DEMO) {
     const prova = montarProva({ titulo: provaDemo.titulo, questoes: provaDemo.questoes });
     const provaId = await salvarProva(prova);

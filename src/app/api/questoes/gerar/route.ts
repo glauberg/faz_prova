@@ -3,6 +3,7 @@ import {
   type QuantidadesPorTipo,
 } from "../../../../integracoes/llm/gerarQuestoes.ts";
 import { obterProvedoresConfigurados } from "../../../../integracoes/llm/provedores.ts";
+import { obterProfessorAutenticado } from "../../../_auth/exigirProfessor.ts";
 
 interface CorpoRequisicao {
   tema?: string;
@@ -11,6 +12,11 @@ interface CorpoRequisicao {
 }
 
 export async function POST(request: Request) {
+  const professor = await obterProfessorAutenticado();
+  if (!professor) {
+    return Response.json({ erro: "não autenticado" }, { status: 401 });
+  }
+
   const corpo = (await request.json()) as CorpoRequisicao;
 
   if (!corpo.tema || corpo.tema.trim() === "") {

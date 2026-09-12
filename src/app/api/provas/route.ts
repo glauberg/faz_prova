@@ -1,7 +1,13 @@
 import { type DadosProva, montarProva, type Prova } from "../../../domain/prova.ts";
 import { salvarProva } from "../../../persistence/provaRepository.ts";
+import { obterProfessorAutenticado } from "../../_auth/exigirProfessor.ts";
 
 export async function POST(request: Request) {
+  const professor = await obterProfessorAutenticado();
+  if (!professor) {
+    return Response.json({ erro: "não autenticado" }, { status: 401 });
+  }
+
   const dados = (await request.json()) as DadosProva;
 
   let prova: Prova;

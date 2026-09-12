@@ -2,8 +2,7 @@
 ## Sobre o projeto
 [O Gestor de Provas é um monorepo web para auxiliar professores na criação, correção e organização de avaliações. A aplicação permite a criação de questionários de questões discursivas, múltipla escolha, dicotômicas e resposta única.]
 ## Próxima etapa (planejada)
-[As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Os scripts de dados de demonstração (`povoar`/`limpar`) e a geração de questões por IA (carrossel de LLMs) também já estão implementados — ver seções "Comandos" e "API (backend)" abaixo. Itens abaixo continuam fora de escopo:]
-- [Autenticação.]
+[As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Os scripts de dados de demonstração (`povoar`/`limpar`), a geração de questões por IA (carrossel de LLMs) e a autenticação de professor também já estão implementados — ver seções "Comandos", "API (backend)" e "Autenticação" abaixo. Itens abaixo continuam fora de escopo:]
 - [Exportação de provas para PDF.]
 - [Correção automática de questões discursivas usando IA.]
 - [Geração de feedback textual automático.]
@@ -21,6 +20,10 @@
 - [`src/povoar.ts` / `src/limpar.ts`] -> [Scripts de terminal que populam e limpam a base de demonstração via `persistence`.]
 - [`src/domain/geracaoQuestoes.ts`] -> [Lógica pura (sem I/O) de geração de questões por IA: monta o prompt por tipo de questão e interpreta/valida o JSON retornado, usando `validarQuestao`.]
 - [`src/integracoes/llm/`] -> [Camada de integração com provedores externos de IA (OpenRouter, Groq) e o carrossel round-robin com fallback entre eles. Único ponto de chamada às APIs de LLM.]
+- [`src/domain/senha.ts` / `src/domain/sessao.ts`] -> [Lógica pura (sem I/O) de autenticação: hash/verificação de senha (`node:crypto` scrypt) e assinatura/verificação de token de sessão (HMAC).]
+- [`src/persistence/professorRepository.ts`] -> [Persistência do professor (`Professor`): criação/atualização com senha já hasheada, autenticação e busca por id.]
+- [`src/app/_auth/`] -> [Camada HTTP de sessão: cria/lê/apaga o cookie `sessao` (`next/headers`) e resolve o professor autenticado a partir dele. Usada pelas rotas de API e por `src/proxy.ts`.]
+- [`src/proxy.ts`] -> [Proxy do Next.js: verificação otimista (sem acesso ao banco) do cookie de sessão; redireciona para `/login` quando ausente/inválido. Todas as páginas exigem login, exceto `/login`.]
 ## API (backend)
 [Rotas em `src/app/api/`, cada uma só orquestrando `domain` + `persistence` (sem regra de negócio própria):]
 - [`POST /api/provas`] -> [Valida (`montarProva`) e persiste uma prova. 400 se inválida.]
@@ -28,6 +31,17 @@
 - [`POST /api/provas/:id/correcoes`] -> [Corrige (`corrigirProva`) e persiste o resultado para um aluno. 404 se a prova não existir.]
 - [`GET /api/resultados/:id`] -> [Recupera um resultado de correção salvo. 404 se não existir.]
 - [`POST /api/questoes/gerar`] -> [Recebe tema, referência bibliográfica e quantidades por tipo; gera questões via carrossel de LLMs (`src/integracoes/llm/`) e as valida (`validarQuestao`) antes de retornar. 400 se tema/referência ausentes ou nenhuma quantidade informada; 503 se nenhum provedor de IA estiver configurado; 502 se a geração falhar.]
+- [`POST /api/auth/login`] -> [Autentica professor (`usuario`/`senha`) e cria o cookie de sessão httpOnly. 401 se credenciais inválidas.]
+- [`POST /api/auth/logout`] -> [Apaga o cookie de sessão.]
+- [`GET /api/auth/me`] -> [Retorna o usuário autenticado. 401 se não houver sessão válida.]
+- [Todas as demais rotas (`/api/provas*`, `/api/resultados/:id`, `/api/questoes/gerar`) exigem sessão válida — 401 se não autenticado.]
+
+## Autenticação
+[Login simples de professor por usuário/senha, sem biblioteca externa (segue o guia oficial de autenticação em `node_modules/next/dist/docs/01-app/02-guides/authentication.md`, adaptado para credenciais próprias):]
+- [Senha hasheada com `scrypt` (`node:crypto`), nunca armazenada em texto puro — ver `src/domain/senha.ts`.]
+- [Sessão stateless: cookie httpOnly `sessao` contendo um token assinado com HMAC-SHA256 (`AUTH_SECRET`, variável de ambiente) e validade de 7 dias — ver `src/domain/sessao.ts` e `src/app/_auth/sessao.ts`.]
+- [`src/proxy.ts` faz a checagem otimista (só decodifica o cookie, sem acessar o banco) e redireciona páginas não autenticadas para `/login`. Cada rota de API faz a checagem segura (`obterProfessorAutenticado`, que confirma o professor no banco) antes de processar a requisição.]
+- [Usuário de demonstração: `profteste` / senha `prof123`, criado por `npm run povoar` (`criarOuAtualizarProfessor`). `npm run limpar` remove todos os professores.]
 ## Comandos
 - [npm install] -> [Instala as dependências do projeto.]
 - [npm run dev] -> [Inicia a aplicação em modo de desenvolvimento.]

@@ -25,6 +25,15 @@ enum StatusQuestaoResultado {
   @@schema("gestor_provas")
 }
 
+model Professor {
+  id        String   @id @default(cuid())
+  usuario   String   @unique
+  senhaHash String
+  createdAt DateTime @default(now())
+
+  @@schema("gestor_provas")
+}
+
 model Prova {
   id        String   @id @default(cuid())
   titulo    String

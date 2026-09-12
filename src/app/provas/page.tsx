@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface ProvaResumo {
@@ -10,12 +11,17 @@ interface ProvaResumo {
 }
 
 export default function ListaProvasPage() {
+  const router = useRouter();
   const [provas, setProvas] = useState<ProvaResumo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
 
   function carregar() {
     fetch("/api/provas")
       .then(async (resposta) => {
+        if (resposta.status === 401) {
+          router.push("/login");
+          return;
+        }
         const dados = await resposta.json();
         if (!resposta.ok) {
           setErro(dados.erro ?? "erro ao carregar provas");
@@ -26,7 +32,7 @@ export default function ListaProvasPage() {
       .catch(() => setErro("erro ao carregar provas"));
   }
 
-  useEffect(carregar, []);
+  useEffect(carregar, [router.push]);
 
   async function excluir(id: string) {
     await fetch(`/api/provas/${id}`, { method: "DELETE" });

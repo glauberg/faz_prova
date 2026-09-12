@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Questao } from "../../domain/questao.ts";
 import type { QuestaoBancoSalva } from "../../domain/questaoBanco.ts";
@@ -20,6 +21,7 @@ const TIPOS: { valor: Questao["tipo"]; rotulo: string }[] = [
 ];
 
 export default function BancoQuestoesPage() {
+  const router = useRouter();
   const [questoes, setQuestoes] = useState<QuestaoBancoSalva[]>([]);
   const [filtroTema, setFiltroTema] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
@@ -40,13 +42,21 @@ export default function BancoQuestoesPage() {
 
     fetch(`/api/questoes?${parametros.toString()}`)
       .then(async (resposta) => {
+        if (resposta.status === 401) {
+          router.push("/login");
+          return;
+        }
         const dados = await resposta.json();
-        setQuestoes(resposta.ok ? (dados.questoes ?? []) : []);
+        if (!resposta.ok) {
+          setErro(dados.erro ?? "erro ao carregar o banco de questões");
+          return;
+        }
+        setQuestoes(dados.questoes ?? []);
       })
-      .catch(() => setQuestoes([]));
+      .catch(() => setErro("erro ao carregar o banco de questões"));
   }
 
-  useEffect(carregar, [filtroTema, filtroTipo]);
+  useEffect(carregar, [filtroTema, filtroTipo, router.push]);
 
   function iniciarEdicao(item: QuestaoBancoSalva) {
     setEditandoId(item.id);
@@ -128,6 +138,7 @@ export default function BancoQuestoesPage() {
       </form>
 
       <h2>Questões cadastradas</h2>
+      {erro && <p className="erro">{erro}</p>}
       <label>
         Filtrar por tema
         <input

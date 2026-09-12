@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { QuestaoBancoSalva } from "../domain/questaoBanco.ts";
 
@@ -13,24 +14,45 @@ interface ProvaResumo {
 const LIMITE_QUESTOES_EXIBIDAS = 10;
 
 export default function HomePage() {
+  const router = useRouter();
   const [provas, setProvas] = useState<ProvaResumo[]>([]);
   const [questoes, setQuestoes] = useState<QuestaoBancoSalva[]>([]);
+  const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
+    async function tratarResposta<T>(resposta: Response): Promise<T | null> {
+      if (resposta.status === 401) {
+        router.push("/login");
+        return null;
+      }
+
+      const dados = await resposta.json();
+      if (!resposta.ok) {
+        throw new Error(dados.erro ?? "erro ao carregar dados");
+      }
+      return dados as T;
+    }
+
     fetch("/api/provas")
-      .then(async (resposta) => {
-        const dados = await resposta.json();
-        setProvas(resposta.ok ? (dados.provas ?? []) : []);
+      .then((resposta) => tratarResposta<{ provas: ProvaResumo[] }>(resposta))
+      .then((dados) => {
+        if (dados) {
+          setProvas(dados.provas ?? []);
+        }
       })
-      .catch(() => setProvas([]));
+      .catch((erro) => setErro(erro instanceof Error ? erro.message : "erro ao carregar provas"));
 
     fetch("/api/questoes")
-      .then(async (resposta) => {
-        const dados = await resposta.json();
-        setQuestoes(resposta.ok ? (dados.questoes ?? []) : []);
+      .then((resposta) => tratarResposta<{ questoes: QuestaoBancoSalva[] }>(resposta))
+      .then((dados) => {
+        if (dados) {
+          setQuestoes(dados.questoes ?? []);
+        }
       })
-      .catch(() => setQuestoes([]));
-  }, []);
+      .catch((erro) =>
+        setErro(erro instanceof Error ? erro.message : "erro ao carregar o banco de questões"),
+      );
+  }, [router]);
 
   return (
     <main>
@@ -40,6 +62,8 @@ export default function HomePage() {
       <p>
         <Link href="/provas/nova">Criar uma nova prova</Link>
       </p>
+
+      {erro && <p className="erro">{erro}</p>}
 
       <h2>Provas ({provas.length})</h2>
       {provas.length === 0 ? (

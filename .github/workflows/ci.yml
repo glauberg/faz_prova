@@ -46,4 +46,8 @@ jobs:
       - run: npm ci
 
       - name: Lint commit messages
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+        # A branch nunca foi mesclada em main, então base..head inclui todo o
+        # histórico do projeto. Usamos como início o commit que introduziu o
+        # commitlint (a677584): commits anteriores a ele são anteriores à
+        # própria regra e não devem ser revalidados retroativamente.
+        run: npx commitlint --from a677584fdaa4358c3a82f6c4d6fa8e9118f3fd17 --to ${{ github.event.pull_request.head.sha }} --verbose

@@ -2,8 +2,7 @@
 ## Sobre o projeto
 [O Gestor de Provas é um monorepo web para auxiliar professores na criação, correção e organização de avaliações. A aplicação permite a criação de questionários de questões discursivas, múltipla escolha, dicotômicas e resposta única.]
 ## Próxima etapa (planejada)
-[As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Os scripts de dados de demonstração (`povoar`/`limpar`), a geração de questões por IA (carrossel de LLMs) e a autenticação de professor também já estão implementados — ver seções "Comandos", "API (backend)" e "Autenticação" abaixo. Itens abaixo continuam fora de escopo:]
-- [Exportação de provas para PDF.]
+[As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Os scripts de dados de demonstração (`povoar`/`limpar`), a geração de questões por IA (carrossel de LLMs), a autenticação de professor e a exportação de provas para PDF também já estão implementados. Itens abaixo continuam fora de escopo:]
 - [Correção automática de questões discursivas usando IA.]
 - [Geração de feedback textual automático.]
 ## Estrutura do monorepo
@@ -28,6 +27,7 @@
 - [`src/persistence/questaoMapper.ts`] -> [Mapeamento `Questao` (domínio) ↔ colunas do Prisma, compartilhado entre `provaRepository` e `questaoBancoRepository` para evitar duplicação.]
 - [`src/persistence/questaoBancoRepository.ts`] -> [CRUD do banco de questões (criar, listar com filtro por tema/tipo, buscar por id(s), atualizar, remover).]
 - [Ao montar/editar uma prova a partir do banco, o conteúdo da questão é copiado para a prova (`Questao.origemBancoId` só guarda a origem para permitir reabrir a seleção ao editar); editar ou excluir a questão no banco depois não afeta provas já criadas.]
+- [`src/app/provas/[id]/exportar/page.tsx`] -> [Exportação para PDF sem biblioteca nova: página formatada para impressão (com opção de incluir gabarito) e botão que aciona `window.print()` — o professor salva como PDF pelo diálogo nativo do navegador. A classe `.no-imprimir` (`globals.css`, `@media print`) esconde a barra de sessão e os controles da tela na impressão.]
 ## API (backend)
 [Rotas em `src/app/api/`, cada uma só orquestrando `domain` + `persistence` (sem regra de negócio própria):]
 - [`GET /api/provas`] -> [Lista provas (id, título, quantidade de questões).]

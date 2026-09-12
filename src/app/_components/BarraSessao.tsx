@@ -37,7 +37,7 @@ export function BarraSessao() {
   }
 
   return (
-    <p>
+    <p className="no-imprimir">
       {usuario} ·{" "}
       <button type="button" onClick={sair}>
         Sair

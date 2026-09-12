@@ -50,3 +50,10 @@ button {
   padding: 0.75rem;
   border-radius: 4px;
 }
+
+@media print {
+  .no-imprimir {
+    /* biome-ignore lint/complexity/noImportantStyles: precisa vencer qualquer especificidade ao imprimir */
+    display: none !important;
+  }
+}

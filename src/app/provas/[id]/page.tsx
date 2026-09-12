@@ -52,6 +52,9 @@ export default function VerProvaPage() {
         <Link href={`/provas/${id}/corrigir`}>Corrigir uma tentativa</Link>
       </p>
       <p>
+        <Link href={`/provas/${id}/exportar`}>Exportar para PDF</Link>
+      </p>
+      <p>
         <Link href={`/provas/${id}/editar`}>Editar prova</Link>{" "}
         <button type="button" onClick={excluir}>
           Excluir prova

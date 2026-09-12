@@ -123,9 +123,32 @@ export default function CorrigirProvaPage() {
         </div>
 
         <div className={styles.formGroup}>
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 700, margin: "0.5rem 0 0 0" }}>
-            Respostas do Aluno ({prova.questoes.length} questões)
-          </h2>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+              margin: "0.5rem 0 0 0",
+            }}
+          >
+            <h2 style={{ fontSize: "1.1rem", fontWeight: 700, margin: 0 }}>
+              Respostas do Aluno ({prova.questoes.length} questões)
+            </h2>
+            <span
+              style={{
+                fontSize: "0.825rem",
+                fontWeight: 600,
+                opacity: 0.8,
+                backgroundColor: "var(--badge-bg, #f1f5f9)",
+                padding: "0.25rem 0.65rem",
+                borderRadius: "9999px",
+              }}
+            >
+              📝 Preenchidas {respostas.size} de {prova.questoes.length}
+            </span>
+          </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
             {prova.questoes.map((questao, indice) => (

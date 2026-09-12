@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  commitlint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint commit messages
+        # A branch nunca foi mesclada em main, então base..head inclui todo o
+        # histórico do projeto. Usamos como início o commit que introduziu o
+        # commitlint (a677584): commits anteriores a ele são anteriores à
+        # própria regra e não devem ser revalidados retroativamente.
+        run: npx commitlint --from a677584fdaa4358c3a82f6c4d6fa8e9118f3fd17 --to ${{ github.event.pull_request.head.sha }} --verbose

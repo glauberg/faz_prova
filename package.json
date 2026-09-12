@@ -1,0 +1,41 @@
+{
+  "name": "faz-prova",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test $(find src -name '*.test.ts')",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "cli": "node src/cli.ts",
+    "prepare": "husky",
+    "postinstall": "prisma generate",
+    "db:migrate": "node --env-file=.env.local node_modules/.bin/prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "node --env-file=.env.local node_modules/.bin/prisma studio",
+    "povoar": "node --env-file=.env.local src/povoar.ts",
+    "limpar": "node --env-file=.env.local src/limpar.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "next": "^16.3.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.12",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@types/node": "^26.4.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "husky": "^9.1.7",
+    "prisma": "^7.10.0",
+    "typescript": "^5.7.2"
+  }
+}

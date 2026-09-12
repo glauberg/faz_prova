@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SeletorQuestoesBanco } from "../../_components/SeletorQuestoesBanco.tsx";
+import styles from "../provas.module.css";
 
 export default function NovaProvaPage() {
   const router = useRouter();
@@ -25,37 +27,70 @@ export default function NovaProvaPage() {
       const dados = await resposta.json();
 
       if (!resposta.ok) {
-        setErro(dados.erro ?? "não foi possível criar a prova");
+        setErro(dados.erro ?? "Não foi possível criar a prova.");
         return;
       }
 
       router.push(`/provas/${dados.id}`);
+    } catch {
+      setErro("Erro de conexão ao tentar criar a prova.");
     } finally {
       setEnviando(false);
     }
   }
 
   return (
-    <main>
-      <h1>Criar prova</h1>
-      <form onSubmit={enviar}>
-        <label>
-          Título
+    <main className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.titleGroup}>
+          <h1 className={styles.title}>Criar Nova Prova</h1>
+          <p className={styles.subtitle}>
+            Informe o título e selecione as questões no banco para montar a avaliação.
+          </p>
+        </div>
+
+        <Link href="/provas" className={styles.secondaryBtn}>
+          &larr; Voltar para Provas
+        </Link>
+      </header>
+
+      <form className={styles.formCard} onSubmit={enviar}>
+        <div className={styles.formGroup}>
+          <label className={styles.formLabel} htmlFor="titulo-prova">
+            Título da Prova
+          </label>
           <input
+            id="titulo-prova"
             type="text"
+            className={styles.formInput}
+            placeholder="Ex: Prova Mensal de Matemática - 1º Bimestre"
             value={titulo}
             onChange={(evento) => setTitulo(evento.target.value)}
             required
+            disabled={enviando}
           />
-        </label>
+        </div>
 
         <SeletorQuestoesBanco selecionadas={questaoBancoIds} onChange={setQuestaoBancoIds} />
 
-        {erro && <p className="erro">{erro}</p>}
+        {erro && (
+          <div className="erro" role="alert">
+            {erro}
+          </div>
+        )}
 
-        <button type="submit" disabled={enviando || questaoBancoIds.length === 0}>
-          {enviando ? "Salvando..." : "Salvar prova"}
-        </button>
+        <div className={styles.formFooter}>
+          <Link href="/provas" className={styles.secondaryBtn}>
+            Cancelar
+          </Link>
+          <button
+            type="submit"
+            className={styles.primaryBtn}
+            disabled={enviando || questaoBancoIds.length === 0}
+          >
+            {enviando ? "Salvando Prova..." : "Salvar Prova"}
+          </button>
+        </div>
       </form>
     </main>
   );

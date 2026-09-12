@@ -2,34 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { Questao } from "../../../domain/questao.ts";
-import { GeracaoQuestoesIa } from "../../_components/GeracaoQuestoesIa.tsx";
-import { QuestaoCampos } from "../../_components/QuestaoCampos.tsx";
-import {
-  novaQuestaoRascunho,
-  paraQuestaoDominio,
-  paraQuestaoRascunho,
-  type QuestaoRascunho,
-} from "../../_components/questaoRascunho.ts";
+import { SeletorQuestoesBanco } from "../../_components/SeletorQuestoesBanco.tsx";
 
 export default function NovaProvaPage() {
   const router = useRouter();
   const [titulo, setTitulo] = useState("");
-  const [questoes, setQuestoes] = useState<QuestaoRascunho[]>([novaQuestaoRascunho()]);
+  const [questaoBancoIds, setQuestaoBancoIds] = useState<string[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
-
-  function atualizarQuestao(indice: number, questao: QuestaoRascunho) {
-    setQuestoes((atual) => atual.map((q, i) => (i === indice ? questao : q)));
-  }
-
-  function removerQuestao(indice: number) {
-    setQuestoes((atual) => atual.filter((_, i) => i !== indice));
-  }
-
-  function adicionarQuestoesGeradas(geradas: Questao[]) {
-    setQuestoes((atual) => [...atual, ...geradas.map(paraQuestaoRascunho)]);
-  }
 
   async function enviar(evento: React.FormEvent) {
     evento.preventDefault();
@@ -40,7 +20,7 @@ export default function NovaProvaPage() {
       const resposta = await fetch("/api/provas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titulo, questoes: questoes.map(paraQuestaoDominio) }),
+        body: JSON.stringify({ titulo, questaoBancoIds }),
       });
       const dados = await resposta.json();
 
@@ -69,29 +49,11 @@ export default function NovaProvaPage() {
           />
         </label>
 
-        <GeracaoQuestoesIa onQuestoesGeradas={adicionarQuestoesGeradas} />
-
-        {questoes.map((questao, indice) => (
-          <QuestaoCampos
-            // biome-ignore lint/suspicious/noArrayIndexKey: a lista é reordenada só por remoção, nunca por arraste
-            key={indice}
-            indice={indice}
-            questao={questao}
-            onChange={(atualizada) => atualizarQuestao(indice, atualizada)}
-            onRemover={() => removerQuestao(indice)}
-          />
-        ))}
-
-        <button
-          type="button"
-          onClick={() => setQuestoes((atual) => [...atual, novaQuestaoRascunho()])}
-        >
-          Adicionar questão
-        </button>
+        <SeletorQuestoesBanco selecionadas={questaoBancoIds} onChange={setQuestaoBancoIds} />
 
         {erro && <p className="erro">{erro}</p>}
 
-        <button type="submit" disabled={enviando || questoes.length === 0}>
+        <button type="submit" disabled={enviando || questaoBancoIds.length === 0}>
           {enviando ? "Salvando..." : "Salvar prova"}
         </button>
       </form>

@@ -63,9 +63,37 @@ model Questao {
   // dicotomica
   gabaritoBooleano Boolean?
 
+  // questão do banco copiada para esta prova no momento da criação/edição;
+  // fica nula se criada antes desta funcionalidade ou se a origem foi removida do banco
+  origemBancoId String?
+  origemBanco   QuestaoBanco? @relation(fields: [origemBancoId], references: [id], onDelete: SetNull)
+
   resultados ResultadoQuestao[]
 
   @@unique([provaId, ordem])
+  @@schema("gestor_provas")
+}
+
+model QuestaoBanco {
+  id    String      @id @default(cuid())
+  tema  String
+  tipo  TipoQuestao
+
+  enunciado String
+
+  // apenas multipla_escolha
+  alternativas String[]
+
+  // multipla_escolha e resposta_unica
+  gabaritoTexto String?
+
+  // dicotomica
+  gabaritoBooleano Boolean?
+
+  createdAt DateTime @default(now())
+
+  copiasEmProvas Questao[]
+
   @@schema("gestor_provas")
 }
 

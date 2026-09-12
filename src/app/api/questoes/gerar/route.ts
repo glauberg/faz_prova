@@ -3,6 +3,7 @@ import {
   type QuantidadesPorTipo,
 } from "../../../../integracoes/llm/gerarQuestoes.ts";
 import { obterProvedoresConfigurados } from "../../../../integracoes/llm/provedores.ts";
+import { salvarQuestaoBanco } from "../../../../persistence/questaoBancoRepository.ts";
 import { obterProfessorAutenticado } from "../../../_auth/exigirProfessor.ts";
 
 interface CorpoRequisicao {
@@ -50,7 +51,14 @@ export async function POST(request: Request) {
       corpo.referenciaBibliografica,
       quantidades,
     );
-    return Response.json({ questoes });
+
+    const salvas = [];
+    for (const questao of questoes) {
+      const id = await salvarQuestaoBanco({ tema: corpo.tema, questao });
+      salvas.push({ id, tema: corpo.tema, questao });
+    }
+
+    return Response.json({ questoes: salvas });
   } catch (erro) {
     const mensagem = erro instanceof Error ? erro.message : "falha ao gerar questões";
     return Response.json({ erro: mensagem }, { status: 502 });

@@ -4,10 +4,8 @@ import type { Questao } from "../../domain/questao.ts";
 import type { QuestaoRascunho } from "./questaoRascunho.ts";
 
 interface QuestaoCamposProps {
-  indice: number;
   questao: QuestaoRascunho;
   onChange: (questao: QuestaoRascunho) => void;
-  onRemover: () => void;
 }
 
 const TIPOS: { valor: Questao["tipo"]; rotulo: string }[] = [
@@ -17,10 +15,10 @@ const TIPOS: { valor: Questao["tipo"]; rotulo: string }[] = [
   { valor: "resposta-unica", rotulo: "Resposta única" },
 ];
 
-export function QuestaoCampos({ indice, questao, onChange, onRemover }: QuestaoCamposProps) {
+export function QuestaoCampos({ questao, onChange }: QuestaoCamposProps) {
   return (
     <fieldset className="questao-rascunho">
-      <legend>Questão {indice + 1}</legend>
+      <legend>Questão</legend>
 
       <label>
         Tipo
@@ -94,10 +92,6 @@ export function QuestaoCampos({ indice, questao, onChange, onRemover }: QuestaoC
           />
         </label>
       )}
-
-      <button type="button" onClick={onRemover}>
-        Remover questão
-      </button>
     </fieldset>
   );
 }

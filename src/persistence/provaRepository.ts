@@ -1,68 +1,31 @@
 import type { Prova } from "../domain/prova.ts";
-import type { Questao } from "../domain/questao.ts";
-import type { Questao as QuestaoDb } from "../generated/prisma/client.js";
-import { TipoQuestao as TipoQuestaoDb } from "../generated/prisma/client.js";
 import { prisma } from "./prisma.ts";
+import { camposParaQuestao, questaoParaCampos } from "./questaoMapper.ts";
 
-function tipoParaDb(tipo: Questao["tipo"]): TipoQuestaoDb {
-  switch (tipo) {
-    case "discursiva":
-      return TipoQuestaoDb.discursiva;
-    case "multipla-escolha":
-      return TipoQuestaoDb.multipla_escolha;
-    case "dicotomica":
-      return TipoQuestaoDb.dicotomica;
-    case "resposta-unica":
-      return TipoQuestaoDb.resposta_unica;
-  }
+export interface ProvaComOrigens extends Prova {
+  questaoBancoIds: (string | null)[];
 }
 
-function questaoParaLinha(questao: Questao, ordem: number) {
-  return {
-    ordem,
-    tipo: tipoParaDb(questao.tipo),
-    enunciado: questao.enunciado,
-    alternativas: questao.tipo === "multipla-escolha" ? questao.alternativas : [],
-    gabaritoTexto:
-      questao.tipo === "multipla-escolha" || questao.tipo === "resposta-unica"
-        ? questao.gabarito
-        : null,
-    gabaritoBooleano: questao.tipo === "dicotomica" ? questao.gabarito : null,
-  };
+export interface ProvaResumo {
+  id: string;
+  titulo: string;
+  quantidadeQuestoes: number;
+  createdAt: Date;
 }
 
-function linhaParaQuestao(linha: QuestaoDb): Questao {
-  switch (linha.tipo) {
-    case TipoQuestaoDb.discursiva:
-      return { tipo: "discursiva", enunciado: linha.enunciado };
-    case TipoQuestaoDb.multipla_escolha:
-      return {
-        tipo: "multipla-escolha",
-        enunciado: linha.enunciado,
-        alternativas: linha.alternativas,
-        gabarito: linha.gabaritoTexto ?? "",
-      };
-    case TipoQuestaoDb.dicotomica:
-      return {
-        tipo: "dicotomica",
-        enunciado: linha.enunciado,
-        gabarito: linha.gabaritoBooleano ?? false,
-      };
-    case TipoQuestaoDb.resposta_unica:
-      return {
-        tipo: "resposta-unica",
-        enunciado: linha.enunciado,
-        gabarito: linha.gabaritoTexto ?? "",
-      };
-  }
-}
-
-export async function salvarProva(prova: Prova): Promise<string> {
+export async function salvarProva(
+  prova: Prova,
+  questaoBancoIds: (string | null)[] = [],
+): Promise<string> {
   const criada = await prisma.prova.create({
     data: {
       titulo: prova.titulo,
       questoes: {
-        create: prova.questoes.map((questao, indice) => questaoParaLinha(questao, indice)),
+        create: prova.questoes.map((questao, indice) => ({
+          ordem: indice,
+          ...questaoParaCampos(questao),
+          origemBancoId: questaoBancoIds[indice] ?? null,
+        })),
       },
     },
   });
@@ -70,7 +33,7 @@ export async function salvarProva(prova: Prova): Promise<string> {
   return criada.id;
 }
 
-export async function buscarProva(id: string): Promise<Prova | null> {
+export async function buscarProva(id: string): Promise<ProvaComOrigens | null> {
   const linha = await prisma.prova.findUnique({
     where: { id },
     include: { questoes: { orderBy: { ordem: "asc" } } },
@@ -82,6 +45,64 @@ export async function buscarProva(id: string): Promise<Prova | null> {
 
   return {
     titulo: linha.titulo,
-    questoes: linha.questoes.map(linhaParaQuestao),
+    questoes: linha.questoes.map(camposParaQuestao),
+    questaoBancoIds: linha.questoes.map((questao) => questao.origemBancoId),
   };
+}
+
+export async function listarProvas(): Promise<ProvaResumo[]> {
+  const linhas = await prisma.prova.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { _count: { select: { questoes: true } } },
+  });
+
+  return linhas.map((linha) => ({
+    id: linha.id,
+    titulo: linha.titulo,
+    quantidadeQuestoes: linha._count.questoes,
+    createdAt: linha.createdAt,
+  }));
+}
+
+export async function atualizarProva(
+  id: string,
+  prova: Prova,
+  questaoBancoIds: (string | null)[] = [],
+): Promise<boolean> {
+  const existente = await prisma.prova.findUnique({ where: { id }, select: { id: true } });
+  if (!existente) {
+    return false;
+  }
+
+  await prisma.$transaction([
+    prisma.resultadoQuestao.deleteMany({ where: { resultadoProva: { provaId: id } } }),
+    prisma.resultadoProva.deleteMany({ where: { provaId: id } }),
+    prisma.questao.deleteMany({ where: { provaId: id } }),
+    prisma.prova.update({
+      where: { id },
+      data: {
+        titulo: prova.titulo,
+        questoes: {
+          create: prova.questoes.map((questao, indice) => ({
+            ordem: indice,
+            ...questaoParaCampos(questao),
+            origemBancoId: questaoBancoIds[indice] ?? null,
+          })),
+        },
+      },
+    }),
+  ]);
+
+  return true;
+}
+
+export async function removerProva(id: string): Promise<boolean> {
+  const [, , , prova] = await prisma.$transaction([
+    prisma.resultadoQuestao.deleteMany({ where: { resultadoProva: { provaId: id } } }),
+    prisma.resultadoProva.deleteMany({ where: { provaId: id } }),
+    prisma.questao.deleteMany({ where: { provaId: id } }),
+    prisma.prova.deleteMany({ where: { id } }),
+  ]);
+
+  return prova.count > 0;
 }

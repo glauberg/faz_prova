@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Questao } from "../../domain/questao.ts";
+import type { QuestaoBancoSalva } from "../../domain/questaoBanco.ts";
 
 interface QuantidadesRascunho {
   discursiva: number;
@@ -22,7 +23,7 @@ function quantidadesVazias(): QuantidadesRascunho {
 }
 
 interface GeracaoQuestoesIaProps {
-  onQuestoesGeradas: (questoes: Questao[]) => void;
+  onQuestoesGeradas: (questoes: QuestaoBancoSalva[]) => void;
 }
 
 export function GeracaoQuestoesIa({ onQuestoesGeradas }: GeracaoQuestoesIaProps) {
@@ -49,7 +50,7 @@ export function GeracaoQuestoesIa({ onQuestoesGeradas }: GeracaoQuestoesIaProps)
         return;
       }
 
-      onQuestoesGeradas(dados.questoes as Questao[]);
+      onQuestoesGeradas(dados.questoes as QuestaoBancoSalva[]);
     } finally {
       setGerando(false);
     }
@@ -57,7 +58,7 @@ export function GeracaoQuestoesIa({ onQuestoesGeradas }: GeracaoQuestoesIaProps)
 
   return (
     <fieldset className="geracao-ia">
-      <legend>Gerar questões com IA</legend>
+      <legend>Gerar questões com IA (salvas direto no banco)</legend>
 
       <label>
         Tema

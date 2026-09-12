@@ -228,7 +228,11 @@ export default function BancoQuestoesPage() {
               }
             }}
           >
-            {editandoId ? "✏️ Editando Questão" : formManualAberto ? "✕ Fechar Form" : "➕ Nova Questão"}
+            {editandoId
+              ? "✏️ Editando Questão"
+              : formManualAberto
+                ? "✕ Fechar Form"
+                : "➕ Nova Questão"}
           </button>
         </div>
       </header>
@@ -280,7 +284,11 @@ export default function BancoQuestoesPage() {
               <button type="button" className={styles.secondaryBtn} onClick={cancelarEdicao}>
                 Cancelar
               </button>
-              <button type="submit" className={styles.primaryBtn} disabled={enviando || !tema.trim()}>
+              <button
+                type="submit"
+                className={styles.primaryBtn}
+                disabled={enviando || !tema.trim()}
+              >
                 {enviando ? "Salvando..." : editandoId ? "Salvar Alterações" : "Salvar no Banco"}
               </button>
             </div>
@@ -382,7 +390,11 @@ export default function BancoQuestoesPage() {
           <>
             {/* Indicador de faixa de itens */}
             <div className={styles.paginationInfo}>
-              Exibindo <strong>{inicioIndice + 1}–{fimIndice}</strong> de <strong>{totalItens}</strong> questão(ões)
+              Exibindo{" "}
+              <strong>
+                {inicioIndice + 1}–{fimIndice}
+              </strong>{" "}
+              de <strong>{totalItens}</strong> questão(ões)
             </div>
 
             <div className={styles.questoesGrid}>
@@ -398,7 +410,9 @@ export default function BancoQuestoesPage() {
                   <article key={item.id} className={styles.questaoCard}>
                     <div className={styles.questaoCardHeader}>
                       <div className={styles.headerMeta}>
-                        <span className={`${styles.tipoBadge} ${getTipoBadgeClass(item.questao.tipo)}`}>
+                        <span
+                          className={`${styles.tipoBadge} ${getTipoBadgeClass(item.questao.tipo)}`}
+                        >
                           {formatTipoNome(item.questao.tipo)}
                         </span>
                         <span className={styles.temaTag}>• {item.tema}</span>

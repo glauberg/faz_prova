@@ -7,10 +7,12 @@
 - [`multipla-escolha`] -> [uma ou mais alternativas podem ser marcadas como corretas (`gabarito: string[]`); o aluno responde marcando um subconjunto de alternativas (checkboxes) e só acerta se marcar exatamente o mesmo conjunto do gabarito.]
 - [`resposta-unica`] -> [exatamente uma alternativa correta (`gabarito: string`) entre uma lista de alternativas (`alternativas: string[]`); o aluno escolhe uma única opção (select).]
 - [`dicotomica` e `discursiva` não mudaram.]
+
 ## Próxima etapa (planejada)
 [As Funcionalidades A (criação de questionário) e B (correção de questões objetivas) já estão implementadas — ver `docs/status-requisitos.md`. A persistência (Prova e ResultadoProva) via Supabase/Prisma também já está implementada — ver seção "API (backend)" abaixo. Os scripts de dados de demonstração (`povoar`/`limpar`), a geração de questões por IA (carrossel de LLMs), a autenticação de professor e a exportação de provas para PDF também já estão implementados. Itens abaixo continuam fora de escopo:]
 - [Correção automática de questões discursivas usando IA.]
 - [Geração de feedback textual automático.]
+
 ## Estrutura do monorepo
 [Um único app Next.js (App Router) hospeda frontend e backend — sem microsserviços, sem repositórios/deploys separados:]
 - [`src/domain/`] -> [Lógica de negócio pura (tipos e validações de `Prova`, `Questao`, `RespostaAluno`, `ResultadoProva`, e a correção). Sem dependência de framework web nem de Prisma.]
@@ -34,6 +36,7 @@
 - [`src/persistence/questaoBancoRepository.ts`] -> [CRUD do banco de questões (criar, listar com filtro por tema/tipo, buscar por id(s), atualizar, remover).]
 - [Ao montar/editar uma prova a partir do banco, o conteúdo da questão é copiado para a prova (`Questao.origemBancoId` só guarda a origem para permitir reabrir a seleção ao editar); editar ou excluir a questão no banco depois não afeta provas já criadas.]
 - [`src/app/provas/[id]/exportar/page.tsx`] -> [Exportação para PDF sem biblioteca nova: página formatada para impressão (com opção de incluir gabarito) e botão que aciona `window.print()` — o professor salva como PDF pelo diálogo nativo do navegador. A classe `.no-imprimir` (`globals.css`, `@media print`) esconde a barra de sessão e os controles da tela na impressão.]
+
 ## API (backend)
 [Rotas em `src/app/api/`, cada uma só orquestrando `domain` + `persistence` (sem regra de negócio própria):]
 - [`GET /api/provas`] -> [Lista provas (id, título, quantidade de questões).]
@@ -58,6 +61,7 @@
 - [Sessão stateless: cookie httpOnly `sessao` contendo um token assinado com HMAC-SHA256 (`AUTH_SECRET`, variável de ambiente) e validade de 7 dias — ver `src/domain/sessao.ts` e `src/app/_auth/sessao.ts`.]
 - [`src/proxy.ts` faz a checagem otimista (só decodifica o cookie, sem acessar o banco) e redireciona páginas não autenticadas para `/login`. Cada rota de API faz a checagem segura (`obterProfessorAutenticado`, que confirma o professor no banco) antes de processar a requisição.]
 - [Usuário de demonstração: `profteste` / senha `prof123`, criado por `npm run povoar` (`criarOuAtualizarProfessor`). `npm run limpar` remove todos os professores.]
+
 ## Comandos
 - [npm install] -> [Instala as dependências do projeto.]
 - [npm run dev] -> [Inicia a aplicação em modo de desenvolvimento.]
@@ -71,6 +75,7 @@
 - [npm run db:studio] -> [Abre o Prisma Studio para inspecionar o banco (usa `--env-file=.env.local`).]
 - [npm run povoar] -> [Cria o professor de demonstração, popula o banco de questões com as 25 questões fixas (`src/dadosDemonstracao.ts`) e monta as 2 provas prontas a partir delas, com resultados de correção de exemplo. Usa `--env-file=.env.local`.]
 - [npm run limpar] -> [Remove todas as provas, questões (de prova e do banco), resultados e professores (usa `--env-file=.env.local`).]
+
 ## Convenções de código
 - [Utilizar TypeScript como linguagem principal.]
 - [Utilizar nomes de variáveis, funções e componentes que expressem claramente sua finalidade.]
@@ -86,6 +91,7 @@
 - [O carrossel de LLMs elabora questões (de qualquer tipo) a partir de tema e referência bibliográfica informados pelo professor, salvando-as direto no banco de questões — usando as chaves em `.env.local`.]
 - [Toda prova é montada a partir de questões do banco (`QuestaoBanco`, identificadas por tema/tipo); não há mais criação de questão avulsa dentro do formulário de prova — questões são sempre criadas/editadas na tela do banco.]
 - [Mensagens de commit seguem Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `ci:`, ...), validado automaticamente pelo hook `commit-msg` do husky + commitlint.]
+
 ## Não fazer
 - [Não introduzir arquitetura de microsserviços.]
 - [Não escrever SQL cru fora do schema/migrações do Prisma.]
@@ -96,13 +102,3 @@
 - [Não implementar funcionalidades futuras apenas porque elas estão previstas no roadmap.]
 - [Não modificar configurações de infraestrutura sem necessidade explícita.]
 - [Não criar mocks para dados.]
-
-<!-- BEGIN:nextjs-agent-rules -->
-
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->

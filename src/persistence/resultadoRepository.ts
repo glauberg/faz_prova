@@ -71,6 +71,7 @@ export async function buscarResultado(id: string): Promise<ResultadoProva | null
   const linha = await prisma.resultadoProva.findUnique({
     where: { id },
     include: {
+      prova: { select: { id: true, titulo: true } },
       detalhamento: {
         include: { questao: { select: { ordem: true } } },
         orderBy: { questao: { ordem: "asc" } },
@@ -88,6 +89,11 @@ export async function buscarResultado(id: string): Promise<ResultadoProva | null
   }));
 
   return {
+    id: linha.id,
+    alunoId: linha.alunoId,
+    provaId: linha.provaId,
+    provaTitulo: linha.prova.titulo,
+    createdAt: linha.createdAt.toISOString(),
     acertosObjetivas: linha.acertosObjetivas,
     totalObjetivas: linha.totalObjetivas,
     detalhamento,

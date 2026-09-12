@@ -12,6 +12,11 @@ export interface ResultadoQuestao {
 }
 
 export interface ResultadoProva {
+  id?: string;
+  alunoId?: string;
+  provaId?: string;
+  provaTitulo?: string;
+  createdAt?: string;
   acertosObjetivas: number;
   totalObjetivas: number;
   detalhamento: ResultadoQuestao[];
